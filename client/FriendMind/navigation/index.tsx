@@ -5,6 +5,7 @@
  */
 import { FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, DefaultTheme, DarkTheme, useNavigation, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
@@ -13,49 +14,70 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MenuIcon from '../components/MenuIcon';
 import TopBar from '../components/TopBar';
 
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
 import Friends from '../screens/Friends';
 import Home from '../screens/Home';
-import ModalScreen from '../screens/ModalScreen';
-import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
-import LinkingConfiguration from './LinkingConfiguration';
+
+import { RootDrawerParamList, RootStackParamList } from '../types';
+import { DrawerActions } from '@react-navigation/native';
+
+import { navigationRef } from './RootNavigation';
+import { createURL } from 'expo-linking';
+import Friend from '../components/Friend';
+import AddEvent from '../components/AddEvent';
+import AddFriend from '../components/AddFriend';
+
 
 export default function Navigation() {
+  
 
-  const navigationRef = useNavigationContainerRef();
+  const Stack = createNativeStackNavigator<RootStackParamList>();
+  
 
+
+/* 
+Stack
+  Drawer
+    Home (Tab)
+      Remind
+      Reminsce
+    Friends
+      Add Friend (modal)
+  Friend
+*/
+  
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <TopBar/>
-      <NavigationContainer>
-          <RootNavigator/> 
+      <NavigationContainer ref={navigationRef}>
+        <Stack.Navigator>
+          <Stack.Screen name="Drawer" component={Drawer} options={{headerShown: false}}/>
+          <Stack.Group screenOptions={{headerShown: false}}>
+            <Stack.Screen name="Friend" component={Friend}/>
+            <Stack.Screen name="AddEvent" initialParams={{location: 'Dunno'}} component={AddEvent}/>
+            <Stack.Screen name="AddFriend" component={AddFriend}/>
+          </Stack.Group>
+        </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
   );
+
 }
 
-/**
- * A root stack navigator is often used for displaying modals on top of all other content.
- * https://reactnavigation.org/docs/modal
- */
-const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function RootNavigator() {
-
-
+function Drawer() {
+  const Drawer = createDrawerNavigator<RootDrawerParamList>();
   return (
-  <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Home" component={Home}
-       options={{headerTitle: () => <Text></Text>}} />
-       <Stack.Screen name="Friends" component={Friends}
-        options={{headerTitle: () => <Text></Text>}}/>
-    </Stack.Navigator>
-  );
+    <Drawer.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
+        <Drawer.Screen name="Home" component={Home} />
+        <Drawer.Screen name="Friends" component={Friends}/>
+    </Drawer.Navigator>
+  )
 }
+
+
+
+// const Stack = createNativeStackNavigator<RootStackParamList>();
+
 
 // const BottomTab = createBottomTabNavigator<RootTabParamList>();
 

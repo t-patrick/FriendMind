@@ -4,14 +4,18 @@ import { Appbar } from 'react-native-paper'
 import App from '../App';
 import { generateBoxShadowStyle } from '../helpers/shadows';
 import { Button, Menu, Divider, Provider } from 'react-native-paper';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { navigate, toggleDrawer } from '../navigation/RootNavigation';
 
 function TopBar() {
-  
 
+  
+  
   return (
     <View>
     <Appbar.Header style={[styles.bar]}>
-      <Appbar.Action icon="menu"/>
+      <Appbar.Action icon="menu" onPress={toggleDrawer}/>
       <Logo/>
     </Appbar.Header>
     </View>

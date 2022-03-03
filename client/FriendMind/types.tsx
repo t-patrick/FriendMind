@@ -18,21 +18,36 @@ declare global {
 // NotFound: undefined;
 
 export type RootStackParamList = {
-  Home: NavigatorScreenParams<RootTabParamList> | undefined;
+  Home: undefined;
   Friends: undefined;
+  Drawer: undefined;
+  Friend: undefined;
+  AddFriend: undefined;
+  AddEvent: {location: string} | undefined
 };
 
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
-  RootStackParamList,
-  Screen
->;
+export type AddEventProps = NativeStackScreenProps<RootStackParamList, 'AddEvent'>;
 
-export type RootTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+// export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
+//   NativeStackScreenProps<RootStackParamList, Screen>
+
+
+
+export type HomeTabParamList = {
+  Remind: undefined;
+  Reminisce: undefined;
 };
 
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
-  BottomTabScreenProps<RootTabParamList, Screen>,
-  NativeStackScreenProps<RootStackParamList>
->;
+
+export type RootDrawerParamList = {
+  Home: undefined;
+  Friends: undefined
+}
+
+// type Props = NativeStackScreenProps<RootStackParamList, ''>;
+
+// export type RootStackScreenProps<Screen extends keyof RootStackParamList> = CompositeScreenProps<
+//   BottomTabScreenProps<RootTabParamList, Screen>,
+//   NativeStackScreenProps<RootStackParamList>
+// >;
+

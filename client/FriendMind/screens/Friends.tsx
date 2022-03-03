@@ -1,20 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Text } from 'react-native'
 import MenuIcon from '../components/MenuIcon';
 
 function Friends() {
 
   const navigation = useNavigation();
-  
-  React.useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => <MenuIcon/>,
-      backButton: {
-        visible: false
-      }
-    })
-  }, []);
+
+  useEffect(() => {
+    console.log('hello from friends');
+  },[])
+
 
   return (
     <Text>Friends</Text>
