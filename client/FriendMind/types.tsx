@@ -41,7 +41,8 @@ export type HomeTabParamList = {
 
 export type RootDrawerParamList = {
   Home: undefined;
-  Friends: undefined
+  Friends: undefined;
+  Stack: undefined
 }
 
 // type Props = NativeStackScreenProps<RootStackParamList, ''>;

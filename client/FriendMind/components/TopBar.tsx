@@ -10,12 +10,12 @@ import { navigate, toggleDrawer } from '../navigation/RootNavigation';
 
 function TopBar() {
 
-  
-  
+const [burgerShowing, setBurgerShowing] = useState(true);
+
   return (
     <View>
     <Appbar.Header style={[styles.bar]}>
-      <Appbar.Action icon="menu" onPress={toggleDrawer}/>
+      {burgerShowing ? <Appbar.Action icon="menu" onPress={toggleDrawer}/> : <></> }
       <Logo/>
     </Appbar.Header>
     </View>
