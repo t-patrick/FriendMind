@@ -1,6 +1,7 @@
-import React, {FC} from 'react'
+import React, {FC, useState} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Headline, Paragraph } from 'react-native-paper'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Divider, Headline, Menu, Paragraph } from 'react-native-paper'
 import { Reminder } from '../types'
 
 type ReminderProps = {
@@ -10,37 +11,81 @@ type ReminderProps = {
 const formatMessage = (mode: string, firstName: string) => {
   switch (mode) {
   case 'Write': 
-    return `Message ${firstName}`;
+    return (
+    <Headline style={styles.name}>
+      <Text style={{fontSize: 34, fontWeight: '600'}}>Message </Text> 
+      <Text>{firstName}</Text>
+    </Headline>
+    )
   case 'Meet':
-    return `Meet up with ${firstName}`;
+    return (
+      <Headline style={styles.name}>
+        <Text style={{fontSize: 34, fontWeight: '600'}}>Meet up with </Text> 
+        <Text>{firstName}</Text>
+      </Headline>
+      )
   case 'Talk': 
-    return `Give ${firstName} a call!`
+    return <Headline style={styles.name}>Give {firstName} a call!</Headline>
   }
 }
 
 const ReminderCard: FC<ReminderProps> = ({reminder}) => {
   const lastComm = reminder.lastComm;
+ 
+  const [visible, setVisible] = useState(false); 
+
+  const openMenu = () => {
+    setVisible(true);
+  }
+  
+  const closeMenu = () => {
+    setVisible(false);
+  }
+
+
+  const renderCard = () => {
+    return(
+      <TouchableOpacity onPress={openMenu}>
+        <View style={styles.card}>
+          {formatMessage(lastComm.preference.mode, reminder.firstName)}
+          <Paragraph style={styles.para}>
+            The last time was <Text style={{fontWeight: '700', fontSize: 20}}>{reminder.lastComm.lastCommunication.toDateString()}
+            </Text> 
+          </Paragraph>
+        </View> 
+      </TouchableOpacity>
+    )
+  }
+ 
   return (
-    <View style={styles.card}>
-    <Headline style={styles.name}>{formatMessage(lastComm.preference.mode, reminder.firstName)}</Headline>
-    <Paragraph style={styles.para}>
-      The last time was <Text style={{fontWeight: '700', fontSize: 20}}>{reminder.lastComm.lastCommunication.toDateString()}
-      </Text> 
-    </Paragraph>
-  </View> 
+    <View style={{backgroundColor: 'rgba(0,0,0,0)', margin: 0}}>
+    <Menu
+        visible={visible}
+        onDismiss={closeMenu}
+        anchor={renderCard()}
+        >
+        <Menu.Item 
+                   onPress={() => {}} 
+                   title="Done!" />
+        <Divider/>
+        <Menu.Item onPress={() => {}} title="View Friend" />
+        <Divider/>
+        <Menu.Item onPress={() => {}} title="Dismiss" />
+      </Menu>
+  </View>
   )
 }
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: 20,
+    marginBottom: 40,
     width: '100%',
-    backgroundColor: '#3EB489',
+    backgroundColor: 'rgba(62, 180, 137, 0.8)',
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
     justifyContent: 'space-around',
-    elevation: 5
+    elevation: 1
   },
   name: {
     fontSize: 30,
@@ -58,12 +103,4 @@ const styles = StyleSheet.create({
 });
 
 
-/* 
-  <View>
-      <Text>{reminder.firstName}</Text>
-      <Text>{reminder.lastName}</Text>
-      <Text>{reminder.lastComm.preference.mode}</Text>
-      <Text>{reminder.lastComm.lastCommunication.toDateString()}</Text>
-    </View>
-*/
 export default ReminderCard;

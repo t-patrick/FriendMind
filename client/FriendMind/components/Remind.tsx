@@ -1,14 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { Reminder } from '../types';
 import ReminderCard from './ReminderCard';
+const splash = require('../assets/images/friendsplash.jpg')
 
 
 const mockReminders: Array<Reminder> = 
 [
   {
+    friendId: 1,
     firstName: 'John',
     lastName: 'Smith',
     lastComm: {
@@ -21,18 +23,18 @@ const mockReminders: Array<Reminder> =
     }
   },
   {
+    friendId: 2,
     firstName: 'Sally',
     lastName: 'McSally',
     lastComm: {
       preference: {
-        mode: 'Meet', 
+        mode: 'Talk', 
         timeUnit: 'Months',
         amount: 3
       },
       lastCommunication: new Date('10/4/2020')
     }
   },
-
 ]
 
 
@@ -48,13 +50,15 @@ function Remind() {
   }
 
 
-const [reminders, setReminders] = useState(mockReminders)
+const [reminders, setReminders] = useState(Array(10).fill(mockReminders[1]))
 
 
   return (
+    <ImageBackground source={splash} resizeMode="cover" style={styles.image}>
     <ScrollView style={styles.list}>
       {reminders.map(reminder => <ReminderCard reminder={reminder}/>)}
     </ScrollView>
+    </ImageBackground>
   )
 }
 
@@ -63,6 +67,21 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginLeft: 25,
     marginRight: 25,
+  },
+  container: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  text: {
+    color: "white",
+    fontSize: 42,
+    lineHeight: 84,
+    fontWeight: "bold",
+    textAlign: "center",
+    backgroundColor: "#000000c0"
   }
 });
 
@@ -74,12 +93,6 @@ const styles = StyleSheet.create({
   - Need to add this to the friend table.
 */
 
-
-
-
-/* 
-
-*/
 
 
 export default Remind;

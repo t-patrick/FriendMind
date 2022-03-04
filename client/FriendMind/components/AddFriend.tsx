@@ -85,14 +85,18 @@ function AddFriend({navigation, route}: AddFriendProps) {
         onChangeText={text => setFirstName(text)}
         autoComplete={false}
         style={styles.firstName}
+        selectionColor='black'
       />
       <TextInput
         label="Last Name"
+        placeholderTextColor='black'
+        placeholder='Last Name'
         value={lastName}
         onChangeText={text => setLastName(text)}
         autoComplete={false}
+        style={styles.firstName}
       />
-      <Subheading style={{marginTop: 20}}>Birthday:</Subheading>
+      <Subheading style={{marginTop: 20, color: 'black'}}>Birthday:</Subheading>
       <View style={styles.birthday}>
         <TextInput
           label="Day"
@@ -121,8 +125,8 @@ function AddFriend({navigation, route}: AddFriendProps) {
           <Picker.Item label="December" value="December"/> 
         </Picker>
       </View>
-        <Subheading style={{marginTop: 30}}>Communication Preferences:</Subheading>
-        <Button icon="plus" mode="contained" color="#3EB489" onPress={showModal}>
+        <Subheading style={{marginTop: 40, fontSize: 20}}>Communication Preferences:</Subheading>
+        <Button icon="plus" mode="contained" color="#3EB489" style={{marginTop: 20}} onPress={showModal}>
           Add Communication Preference
         </Button>
       <Portal>
@@ -130,26 +134,27 @@ function AddFriend({navigation, route}: AddFriendProps) {
             <View style={styles.commAdder}>
             <Text style={{fontSize: 26, marginBottom: 10}}>Add Preference: </Text>
             <View style={styles.meet}>
-              <Subheading style={{fontSize: 18}}>I want to:</Subheading>
+              <Subheading style={{fontSize: 18, color: 'black'}}>I want to:</Subheading>
               <Picker
                 selectedValue={selectedMode}
                 onValueChange={(value, index) => setSelectedMode(value)}
                 style={styles.modePicker}>
                 <Picker.Item label="Meet" value="Meet"/>    
-                <Picker.Item label="Write/Message"  value="Write_Message"/>  
+                <Picker.Item label="Write/Message"  value="Write/Message"/>  
                 <Picker.Item label="Speak" value="Speak"/> 
               </Picker>
             </View>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-            <Subheading style={{fontSize: 18}}>Every:</Subheading>
+            <Subheading style={{fontSize: 18, color: 'black'}}>Every:</Subheading>
             <TextInput
               label=""
               style={styles.amount}
               value={amount}
               onChangeText={text => setAmount(text)}
               autoComplete={false}
-              keyboardType='numeric'/>
+              keyboardType='numeric'
+              selectionColor='black'/>
             <Picker
               selectedValue={timeUnit}
               onValueChange={(value, index) => setTimeUnit(value)}
@@ -190,14 +195,16 @@ function AddFriend({navigation, route}: AddFriendProps) {
 const styles = StyleSheet.create({
   header: {
     marginBottom: 20,
-    fontSize: 28
+    fontSize: 28,
+    color: 'black'
   },
   firstName: {
-    marginBottom: 20
+    marginBottom: 20,
   },
   birthday: {
     flexDirection: 'row',
     marginTop: 5,
+    color: 'black'
   },
   commAdder: {
     marginTop: 5,
@@ -222,12 +229,14 @@ const styles = StyleSheet.create({
   },
   day: {
     flex: 1,
-    width: 40
+    width: 40,
+    backgroundColor: '#FBFBFB'
   },
   amount: {
     width: '20%',
     height: 50,
-    marginLeft: 20
+    marginLeft: 20,
+    backgroundColor: '#d6d6d6'
   },
   timeunit: {
     width: 150,
@@ -252,7 +261,7 @@ const styles = StyleSheet.create({
   },
   bottomButton: {
     width: 150,
-    backgroundColor: '#1685EC'
+    backgroundColor: '#1685EC',
   }
 })
 
