@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { Reminder } from '../types';
+import { ScrollView } from 'react-native-gesture-handler';
+import { CommPreference, Friend, Reminder } from '../types';
 import ReminderCard from './ReminderCard';
 const splash = require('../assets/images/friendsplash.jpg')
 
@@ -24,8 +24,8 @@ const mockReminders: Array<Reminder> =
   },
   {
     friendId: 2,
-    firstName: 'Sally',
-    lastName: 'McSally',
+    firstName: 'Beth',
+    lastName: 'Lee',
     lastComm: {
       preference: {
         mode: 'Talk', 
@@ -49,14 +49,13 @@ function Remind() {
     }).catch(e => console.log(e));
   }
 
-
-const [reminders, setReminders] = useState(Array(10).fill(mockReminders[1]))
+const [reminders, setReminders] = useState<Array<Reminder>>(Array(10).fill(mockReminders[1]))
 
 
   return (
     <ImageBackground source={splash} resizeMode="cover" style={styles.image}>
     <ScrollView style={styles.list}>
-      {reminders.map(reminder => <ReminderCard reminder={reminder}/>)}
+      {reminders.map(reminder => <ReminderCard key={reminder.friendId} reminder={reminder}/>)}
     </ScrollView>
     </ImageBackground>
   )

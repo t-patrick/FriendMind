@@ -2,7 +2,6 @@ import React from 'react'
 import { Feather as DefaultFeather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackScreenProps } from '../types';
 
 function MenuIcon () {
 

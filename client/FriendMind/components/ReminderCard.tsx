@@ -1,8 +1,9 @@
+import { useNavigation, useNavigationState } from '@react-navigation/native'
 import React, {FC, useState} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Divider, Headline, Menu, Paragraph } from 'react-native-paper'
-import { Reminder } from '../types'
+import { Friend, Reminder } from '../types'
 
 type ReminderProps = {
   reminder: Reminder
@@ -30,6 +31,43 @@ const formatMessage = (mode: string, firstName: string) => {
 }
 
 const ReminderCard: FC<ReminderProps> = ({reminder}) => {
+
+  const navigation = useNavigation()
+
+  const mockFriendOpen = () => {
+
+    const friendData: Friend = {
+      firstName: 'Beth',
+      lastName: 'Lee',
+      birthDay: 2,
+      birthMonth: 'March',
+      lastComms: [
+        {
+          preference: {
+            mode: 'Write',
+            timeUnit: 'Days', 
+            amount: 4
+          },
+          lastCommunication: new Date('3/3/2022')
+        },
+        {
+          preference: {
+            mode: 'Meet',
+            timeUnit:  'Weeks',
+            amount: 2
+          },
+          lastCommunication: new Date('2/20/2022')
+        }
+      ],
+      notes: [
+        'She is the best',
+        'Don\'t leave it too long'
+      ]
+    }
+    closeMenu()
+
+    navigation.navigate('Friend', {friendData: friendData})
+  }
   const lastComm = reminder.lastComm;
  
   const [visible, setVisible] = useState(false); 
@@ -68,7 +106,7 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
                    onPress={() => {}} 
                    title="Done!" />
         <Divider/>
-        <Menu.Item onPress={() => {}} title="View Friend" />
+        <Menu.Item onPress={mockFriendOpen} title="View Friend" />
         <Divider/>
         <Menu.Item onPress={() => {}} title="Dismiss" />
       </Menu>
