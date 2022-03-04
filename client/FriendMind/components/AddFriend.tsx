@@ -122,7 +122,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
         </Picker>
       </View>
         <Subheading style={{marginTop: 30}}>Communication Preferences:</Subheading>
-        <Button icon="plus" mode="contained" onPress={showModal}>
+        <Button icon="plus" mode="contained" color="#3EB489" onPress={showModal}>
           Add Communication Preference
         </Button>
       <Portal>
