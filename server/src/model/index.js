@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(process.env.DB, process.env.USER, process.env.PASSWORD, {
@@ -64,7 +62,6 @@ has a communication, to find the date.
 has many meeting notes and images.
 */
 db.meeting.belongsTo(db.communication);
-
 
 db.meeting.hasMany(db.meetingnote);
 db.meetingnote.belongsTo(db.meeting);

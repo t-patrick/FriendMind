@@ -1,12 +1,3 @@
-/*
-  User obvs needs id,
-  firstname
-  lastname
-  email
-
-  Probably no point going crazy..
-*/
-
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     email: {

@@ -1,6 +1,4 @@
 
-
-
 module.exports = (sequelize, DataTypes) => {
   const CommunicationPreference = sequelize.define('CommunicationPreference', {
     type: {

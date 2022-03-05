@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <img id="i"/>
+  <input type="file" id="fileselect"/>
+  <script>
+    let img;
+
+    fetch('http://localhost:3000/image?id=6').then(resp => resp.blob()).then(blob => {
+      img = URL.createObjectURL(blob);
+      document.getElementById('i').src = img;
+
+    })
+
+    async function send() {
+      let file = document.getElementById('fileselect').files[0];
+
+      let form = new FormData();
+      form.append('image', file);
+
+      console.log(file);
+      fetch('http://localhost:3000/sendimage', {
+        method: 'POST',
+        body: form
+      });
+    }
+
+
+
+  </script>
+</body>
+</html>

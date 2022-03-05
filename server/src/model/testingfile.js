@@ -1,3 +1,22 @@
+/* 
+  Testing file for database models. Will reuse logic in controllers.
+*/
+
+
+/*    
+Very useful trick to figure out association mixins.
+
+let model = db.meeting;
+    console.log(Object.keys(model));
+    for (let assoc of Object.keys(model.associations)) {
+      for (let accessor of Object.keys(model.associations[assoc].accessors)) {
+        console.log(model.name + '.' + model.associations[assoc].accessors[accessor]+'()');
+      }
+    } 
+    
+    
+*/
+
 const db = require('.');
 
 async function addUser () {
@@ -18,24 +37,36 @@ async function addFriend (id) {
   try {
     const user = await db.user.findOne({ where: {id: id}});
     await user.createFriend({
-      firstName: 'Friendooo'
+      firstName: 'Friendooo',
+      profilePictureUrl: 'user1img.jpg'
     });
-
+    
   } catch (e) {
     console.log(e);
   }
 }
 
-async function addMeetingData (meeting) {
+
+async function getFriend(friendId) {
+  const friend = await db.friend.findOne({where: {id: friendId}})
+  return friend;
+}
+
+async function addMeetingData (notes, meeting) {
   try {
-    let a = await db.meeting.findOne({id: 1});
-    console.log(a);
-    console.log(Object.keys(a));
+    let a = await db.meeting.findOne({id: 5});
+ 
+
+    notes.forEach(async note => {
+      let newNote = await db.meetingnote.create({text: note});
+      await a.addMeetingNote(newNote);
+    })
+
   } catch (e) {
     console.log(e);
   }
 }
-addMeetingData();
+// addMeetingData(['It was so damn fun', 'he is a funny guy']);
 async function addMeeting (userId, friendId, data) {
   /* 
     1. Get Friend
@@ -48,7 +79,7 @@ async function addMeeting (userId, friendId, data) {
 
   */
   try {
-    const friend = await db.friend.findOne({ where: {UserId: userId, id: friendId}});
+    const friend = await db.meeting .findOne({ where: {UserId: userId, id: friendId}});
 
     const comm = await friend.createCommunication({
       UserId: userId,
@@ -77,3 +108,5 @@ const meetingData = {
     'Learned about cool band- The Beatles'
   ]
 }
+
+module.exports = { getFriend }
