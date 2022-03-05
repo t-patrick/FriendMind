@@ -1,19 +1,15 @@
-import { NavigationContainer, useNavigation } from '@react-navigation/native'
-
 import React, { useEffect } from 'react'
-import { Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-
-import { Feather as DefaultFeather } from '@expo/vector-icons';
-import MenuIcon from '../components/MenuIcon';
-import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeTabParamList } from '../types';
 import Remind from '../components/Remind';
 import Reminisce from '../components/Reminisce';
 
+/* TODO
+  Add custom content components for Remind and Reminise buttons
+*/
+
 function Home() {
 
-  const navigation = useNavigation();
   const BottomTab = createBottomTabNavigator<HomeTabParamList>(); 
 
   return (
@@ -30,7 +26,4 @@ function Home() {
   )
 }
 
-    // <View style={{flex: 1}}>
-    //   <Text>Hello</Text>
-    // </View>
-export default Home
+export default Home;

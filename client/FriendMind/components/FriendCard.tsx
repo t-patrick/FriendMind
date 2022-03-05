@@ -1,10 +1,8 @@
-import React, { FC, useState } from 'react';
-import { useEffect } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { Avatar, Headline, Paragraph } from 'react-native-paper';
+import React, { FC } from 'react';
+import { StyleSheet,View } from 'react-native';
+import { Avatar, Headline } from 'react-native-paper';
 
 const FriendCard: FC<FriendCardProps> = (props) => {
-
 
   const { friend } = props;
 

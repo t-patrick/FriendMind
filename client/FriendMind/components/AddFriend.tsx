@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Headline, Subheading, TextInput, Modal, Portal, Button  } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AddFriendProps } from '../types';
@@ -10,7 +10,6 @@ function AddFriend({navigation, route}: AddFriendProps) {
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [open, setOpen] = useState(false);
   const [monthValue, setMonthValue] = useState('January');
   const [dayValue, setDayValue] = useState('1');
   const [dayError, setDayError] = useState(false)
@@ -28,6 +27,8 @@ function AddFriend({navigation, route}: AddFriendProps) {
   const hideModal = () => setVisible(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
 
+ 
+  // Day error validation
 
   const setDay = (day:string) => {
     console.log(day);
@@ -41,8 +42,6 @@ function AddFriend({navigation, route}: AddFriendProps) {
     setMonthValue(month)
     setDayError(!checkDayValid(parseInt(dayValue), month))
   }
-
-
 
   const addPreference = () => {
     const newState = [...commPreferences];
@@ -58,7 +57,10 @@ function AddFriend({navigation, route}: AddFriendProps) {
     hideModal();
   }
 
-
+  /* 
+    TODO: API call to add Friend
+    TODO: Add small modal for success.
+  */
   const handleAddFriend = () => {
     const friend: Friend = {
       firstName: firstName,
@@ -68,13 +70,15 @@ function AddFriend({navigation, route}: AddFriendProps) {
       commPreferences: commPreferences
     }
 
-    console.log(friend);
 
+  
     navigation.goBack();
 
   }
 
-
+  /* 
+    TODO: Separate out into smaller components
+  */
   return (
     <View style={{flex: 1, padding: 30}}>
       {/* <Text style={styles.header}>Add Friend</Text> */}
@@ -110,7 +114,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
           prompt='Month'
           selectedValue={monthValue}
           style={styles.month}
-          onValueChange={(value, index) => setMonth(value)}>
+          onValueChange={(value) => setMonth(value)}>
           <Picker.Item label="January"  value="January"/>  
           <Picker.Item label="February" value="February"/> 
           <Picker.Item label="March"    value="March"/>    
@@ -137,7 +141,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
               <Subheading style={{fontSize: 18, color: 'black'}}>I want to:</Subheading>
               <Picker
                 selectedValue={selectedMode}
-                onValueChange={(value, index) => setSelectedMode(value)}
+                onValueChange={(value) => setSelectedMode(value)}
                 style={styles.modePicker}>
                 <Picker.Item label="Meet" value="Meet"/>    
                 <Picker.Item label="Write/Message"  value="Write/Message"/>  
@@ -157,7 +161,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
               selectionColor='black'/>
             <Picker
               selectedValue={timeUnit}
-              onValueChange={(value, index) => setTimeUnit(value)}
+              onValueChange={(value) => setTimeUnit(value)}
               style={styles.timeunit}>
               <Picker.Item label="Days" value="Days"/>    
               <Picker.Item label="Weeks"  value="Weeks"/>  
@@ -303,4 +307,4 @@ type Friend = {
 }
 
 
-export default AddFriend
+export default AddFriend;

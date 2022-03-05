@@ -1,42 +1,23 @@
-import { useNavigation, useNavigationState } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import React, {FC, useState} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Divider, Headline, Menu, Paragraph } from 'react-native-paper'
-import { Friend, Reminder } from '../types'
+import { Friend, ReminderProps } from '../types'
 
-type ReminderProps = {
-  reminder: Reminder
-}
-
-const formatMessage = (mode: string, firstName: string) => {
-  switch (mode) {
-  case 'Write': 
-    return (
-    <Headline style={styles.name}>
-      <Text style={{fontSize: 34, fontWeight: '600'}}>Message </Text> 
-      <Text>{firstName}</Text>
-    </Headline>
-    )
-  case 'Meet':
-    return (
-      <Headline style={styles.name}>
-        <Text style={{fontSize: 34, fontWeight: '600'}}>Meet up with </Text> 
-        <Text>{firstName}</Text>
-      </Headline>
-      )
-  case 'Talk': 
-    return <Headline style={styles.name}>Give {firstName} a call!</Headline>
-  }
-}
 
 const ReminderCard: FC<ReminderProps> = ({reminder}) => {
 
   const navigation = useNavigation()
 
+  ///////////////////////
+  // This data will be fetched from database on click.
+  // Use screen navigation to supply correct props to Friend page. 
+  ///////////////
+
   const mockFriendOpen = () => {
 
-    const friendData: Friend = {
+    const mockFriendData: Friend = {
       firstName: 'Beth',
       lastName: 'Lee',
       birthDay: 2,
@@ -66,7 +47,8 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
     }
     closeMenu()
 
-    navigation.navigate('Friend', {friendData: friendData})
+    navigation.navigate('Friend', {friendData: mockFriendData})
+
   }
   const lastComm = reminder.lastComm;
  
@@ -96,19 +78,18 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
   }
  
   return (
-    <View style={{backgroundColor: 'rgba(0,0,0,0)', margin: 0}}>
+    <View>
     <Menu
         visible={visible}
         onDismiss={closeMenu}
         anchor={renderCard()}
         >
-        <Menu.Item 
-                   onPress={() => {}} 
+        <Menu.Item onPress={() => console.log('dismiss')} 
                    title="Done!" />
         <Divider/>
         <Menu.Item onPress={mockFriendOpen} title="View Friend" />
         <Divider/>
-        <Menu.Item onPress={() => {}} title="Dismiss" />
+        <Menu.Item onPress={() => console.log('dismiss')} title="Dismiss" />
       </Menu>
   </View>
   )
@@ -140,5 +121,29 @@ const styles = StyleSheet.create({
   }
 });
 
+/* 
+  Make reminder message pretty
+  TODO add variations to messages, maybe depending on how long it has been. 
+*/
+const formatMessage = (mode: string, firstName: string) => {
+  switch (mode) {
+  case 'Write': 
+    return (
+    <Headline style={styles.name}>
+      <Text style={{fontSize: 34, fontWeight: '600'}}>Message </Text> 
+      <Text>{firstName}</Text>
+    </Headline>
+    )
+  case 'Meet':
+    return (
+      <Headline style={styles.name}>
+        <Text style={{fontSize: 34, fontWeight: '600'}}>Meet up with </Text> 
+        <Text>{firstName}</Text>
+      </Headline>
+      )
+  case 'Talk': 
+    return <Headline style={styles.name}>Give {firstName} a call!</Headline>
+  }
+}
 
 export default ReminderCard;

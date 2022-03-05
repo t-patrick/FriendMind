@@ -1,5 +1,10 @@
 import { Platform } from "react-native";
 
+
+/* 
+  Complicated. Will maybe use later.
+*/
+
 export const generateBoxShadowStyle = (
   xOffset: number,
   yOffset: number,

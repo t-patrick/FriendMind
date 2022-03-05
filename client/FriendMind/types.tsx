@@ -1,10 +1,3 @@
-/**
- * Learn more about using TypeScript with React Navigation:
- * https://reactnavigation.org/docs/typescript/
- */
-
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 declare global {
@@ -13,25 +6,27 @@ declare global {
   }
 }
 
-// Root: NavigatorScreenParams<RootTabParamList> | undefined;
-// Modal: undefined;
-// NotFound: undefined;
+/*///////////////////
+  NAVIGATION TYPES
+  Necessary for passing props through navigation interface.
+*//////////////////////////////////////
 
 export type RootStackParamList = {
   Home: undefined;
   Friends: undefined;
   Drawer: undefined;
-  Friend: undefined;
+  Friend: {friendData: Friend};
   AddFriend: undefined;
   AddEvent: {location: string} | undefined
 };
 
 export type AddEventProps = NativeStackScreenProps<RootStackParamList, 'AddEvent'>;
-
-// export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
-//   NativeStackScreenProps<RootStackParamList, Screen>
-
-
+export type AddFriendProps = NativeStackScreenProps<RootStackParamList, 'AddFriend'>;
+export type FriendsProps = NativeStackScreenProps<RootStackParamList, 'Friends'>;
+export type FriendProps = NativeStackScreenProps<RootStackParamList, 'Friend'>;
+export type ReminderProps = {
+  reminder: Reminder
+}
 
 export type HomeTabParamList = {
   Remind: undefined;
@@ -45,10 +40,46 @@ export type RootDrawerParamList = {
   Stack: undefined
 }
 
-// type Props = NativeStackScreenProps<RootStackParamList, ''>;
+/* ///////////////////
+  ACTUAL DATA TYPES
+    TODO: create api to fetch these from server.
+*//////////////////////////////////////
 
-// export type RootStackScreenProps<Screen extends keyof RootStackParamList> = CompositeScreenProps<
-//   BottomTabScreenProps<RootTabParamList, Screen>,
-//   NativeStackScreenProps<RootStackParamList>
-// >;
+export type Friend = {
+  firstName: string,
+  lastName: string, 
+  birthDay: number,
+  birthMonth: string,
+  lastComms: Array<LastComm>,
+  notes?: Array<string>
+}
+
+export type FriendWithLastComms = {
+  firstName: string,
+  lastName: string, 
+  lastComms: Array<LastComm>,
+}
+
+export type Reminder = {
+  friendId: number,
+  firstName: string,
+  lastName: string,
+  lastComm: LastComm
+}
+export type LastComm = {
+  preference: CommPreference, 
+  lastCommunication: Date
+}
+
+export type CommPreference = {
+  mode: 'Write' | 'Talk' | 'Meet' | 'Added'
+  timeUnit: 'Days' | 'Weeks' | 'Months' | 'Years';
+  amount: number;
+}
+
+export type FriendForCard = {
+  firstName: string,
+  lastName: string;
+  lastSeen: Date;
+}
 

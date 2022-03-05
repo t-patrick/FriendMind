@@ -1,9 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { CommPreference, Friend, Reminder } from '../types';
+import { Reminder } from '../types';
 import ReminderCard from './ReminderCard';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const splash = require('../assets/images/friendsplash.jpg')
 
 
@@ -42,14 +44,8 @@ function Remind() {
 
   const navigation = useNavigation();
 
-  function testFetch () {
-    console.log('In test fetch')
-    fetch('http://10.0.2.2:3000/hello').then(res => res.json()).then(obj => {
-      console.log('got the response', obj);
-    }).catch(e => console.log(e));
-  }
 
-const [reminders, setReminders] = useState<Array<Reminder>>(Array(10).fill(mockReminders[1]))
+  const [reminders, setReminders] = useState<Array<Reminder>>(Array(10).fill(mockReminders[1]))
 
 
   return (
@@ -90,6 +86,13 @@ const styles = StyleSheet.create({
   Needs to get preferences for each friend
   For Each preference, get last communication from Communications table, or default to time they were added.
   - Need to add this to the friend table.
+  
+  function testFetch () {
+    console.log('In test fetch')
+    fetch('http://10.0.2.2:3000/hello').then(res => res.json()).then(obj => {
+      console.log('got the response', obj);
+    }).catch(e => console.log(e));
+  }
 */
 
 

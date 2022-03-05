@@ -1,15 +1,13 @@
 import React, { useState } from 'react'
 import { Image, StyleSheet, View } from 'react-native';
 import { Appbar } from 'react-native-paper'
-import App from '../App';
-import { generateBoxShadowStyle } from '../helpers/shadows';
-import { Button, Menu, Divider, Provider } from 'react-native-paper';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { navigate, toggleDrawer } from '../navigation/RootNavigation';
+import { toggleDrawer } from '../navigation/RootNavigation';
 
 function TopBar() {
 
+/* 
+  Want to disable hamburger menu showing on certain screens.
+*/
 const [burgerShowing, setBurgerShowing] = useState(true);
 
   return (
@@ -31,8 +29,6 @@ const Logo = () => {
   )
 }
 
-// const shadowStyle = generateBoxShadowStyle(0, 2, 'black', 0.4, 0, 5, 'black');
-
 const styles = StyleSheet.create({
   bar: {
     height: 50,
@@ -51,4 +47,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TopBar
+export default TopBar;

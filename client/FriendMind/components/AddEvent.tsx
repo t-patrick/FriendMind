@@ -1,7 +1,11 @@
-import React, { PropsWithRef } from 'react'
+import React from 'react'
 import { Text, View } from 'react-native'
 import { Appbar } from 'react-native-paper'
 import { AddEventProps } from '../types'
+
+/* 
+  Need to create this.
+*/
 
 function AddEvent({navigation, route}: AddEventProps) {
 
