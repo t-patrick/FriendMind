@@ -34,7 +34,9 @@ function Reminisce() {
   const createFormData = (photo: ImagePicker.ImageInfo | undefined) => {
     const data = new FormData();
   
-    data.append('photo', photo!.uri);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-nocheck
+    data.append('photo', photo);
   
     // Object.keys(body).forEach((key) => {
     //   data.append(key, body[key]);

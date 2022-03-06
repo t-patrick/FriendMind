@@ -19,10 +19,6 @@ export const getFriends = async (userId: number) => {
 } 
 
 export const addFriend = async (userId: number, friend: FriendForAdd, preferences: Array<CommPreference>) => {
- 
-  console.log('====================================');
-  console.log('friend', friend);
-  console.log('====================================');
   return fetch(`${baseUrl}/friend?id=${userId}`, {
     method: 'POST',
     headers: {
@@ -31,6 +27,21 @@ export const addFriend = async (userId: number, friend: FriendForAdd, preference
     body: JSON.stringify({ friend, preferences })
   }).then(resp => resp.json());
 }
+
+export const addFriendNote = (id: number, note: Note) => {
+  return fetch(`${baseUrl}/friendnote?id=${id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(note)
+  }).then(resp => resp.json());
+}
+
+export const postMeeting = (id: number, note: Note) => {
+
+};
+
 
 export type FriendForAdd = {
   firstName: string,
@@ -64,6 +75,10 @@ export type Reminder = {
 export type LastComm = {
   preference: CommPreference, 
   lastCommunication: Date
+}
+
+export type Note = {
+  text: string
 }
 
 export type CommPreference = {

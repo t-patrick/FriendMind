@@ -1,10 +1,11 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Dispatch, SetStateAction } from 'react';
 
-declare global {
-  namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
-  }
-}
+// declare global {
+//   namespace ReactNavigation {
+//     interface RootParamList extends RootStackParamList {}
+//   }
+// }
 
 /*///////////////////
   NAVIGATION TYPES
@@ -15,17 +16,24 @@ export type RootStackParamList = {
   Home: undefined;
   Friends: undefined;
   Drawer: undefined;
-  Friend: {friendData: Friend};
+  Friend: {friend: Friend};
   AddFriend: undefined;
-  AddEvent: {location: string} | undefined
+  AddEvent: undefined
 };
 
+export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 export type AddEventProps = NativeStackScreenProps<RootStackParamList, 'AddEvent'>;
 export type AddFriendProps = NativeStackScreenProps<RootStackParamList, 'AddFriend'>;
 export type FriendsProps = NativeStackScreenProps<RootStackParamList, 'Friends'>;
 export type FriendProps = NativeStackScreenProps<RootStackParamList, 'Friend'>;
 export type ReminderProps = {
   reminder: Reminder
+}
+
+
+export interface FriendCardProps {
+  friend: FriendForCard,
+  goToFriend: (id: number) => void;
 }
 
 export type HomeTabParamList = {
@@ -46,12 +54,17 @@ export type RootDrawerParamList = {
 *//////////////////////////////////////
 
 export type Friend = {
+  id: number, 
   firstName: string,
   lastName: string, 
   birthDay: number,
   birthMonth: string,
   lastComms: Array<LastComm>,
-  notes?: Array<string>
+  notes?: Array<Note>
+}
+
+export type Note = {
+  text: string
 }
 
 export type FriendWithLastComms = {
@@ -68,18 +81,30 @@ export type Reminder = {
 }
 export type LastComm = {
   preference: CommPreference, 
-  lastCommunication: Date
+  lastCommunication: Communication
 }
 
+export type Communication = {
+  date: Date,
+  id: number,
+  type: 'Write' | 'Talk' | 'Meet' | 'Added'
+}
+
+
 export type CommPreference = {
-  mode: 'Write' | 'Talk' | 'Meet' | 'Added'
+  mode: 'Write' | 'Talk' | 'Meet';
   timeUnit: 'Days' | 'Weeks' | 'Months' | 'Years';
   amount: number;
 }
 
 export type FriendForCard = {
+  id: number, 
   firstName: string,
   lastName: string;
   lastSeen: Date;
 }
 
+export type FriendContextValue = {
+  allFriends: Array<Friend>,
+  setAllFriends: Dispatch<SetStateAction<Friend[]>>
+} 

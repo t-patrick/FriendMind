@@ -1,60 +1,93 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { ImageBackground, StyleSheet } from 'react-native';
+import moment from 'moment';
+import React, { useContext, useEffect, useState } from 'react';
+import { ImageBackground, StyleSheet, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { FriendContext } from '../App';
 import { Reminder } from '../types';
 import ReminderCard from './ReminderCard';
-
+import { DurationInputArg1, DurationInputArg2 } from 'moment';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const splash = require('../assets/images/friendsplash.jpg')
 
 
-const mockReminders: Array<Reminder> = 
-[
-  {
-    friendId: 1,
-    firstName: 'John',
-    lastName: 'Smith',
-    lastComm: {
-      preference: {
-        mode: 'Write', 
-        timeUnit: 'Weeks',
-        amount: 2
-      },
-      lastCommunication: new Date('4/4/2020')
-    }
-  },
-  {
-    friendId: 2,
-    firstName: 'Beth',
-    lastName: 'Lee',
-    lastComm: {
-      preference: {
-        mode: 'Talk', 
-        timeUnit: 'Months',
-        amount: 3
-      },
-      lastCommunication: new Date('10/4/2020')
-    }
-  },
-]
+// const mockReminders: Array<Reminder> = 
+// [
+//   {
+//     friendId: 1,
+//     firstName: 'John',
+//     lastName: 'Smith',
+//     lastComm: {
+//       preference: {
+//         mode: 'Write', 
+//         timeUnit: 'Weeks',
+//         amount: 2
+//       },
+//       lastCommunication: new Date('4/4/2020')
+//     }
+//   },
+//   {
+//     friendId: 2,
+//     firstName: 'Beth',
+//     lastName: 'Lee',
+//     lastComm: {
+//       preference: {
+//         mode: 'Talk', 
+//         timeUnit: 'Months',
+//         amount: 3
+//       },
+//       lastCommunication: new Date('10/4/2020')
+//     }
+//   },
+// ]
+
 
 
 function Remind() {
 
   const navigation = useNavigation();
+  const { allFriends } = useContext(FriendContext);
+  const [reminders, setReminders] = useState<Array<Reminder>>()
 
 
-  const [reminders, setReminders] = useState<Array<Reminder>>(Array(10).fill(mockReminders[1]))
+
+  useEffect(() => {
+    // Turn Friend Preferences into Reminders.
+    // Filter them by comparing preferences to last communication.
+
+    const reminds: Array<Reminder> = [];
+
+    allFriends.forEach(friend => {
+      friend.lastComms.forEach(comm => {
+        const lastComm = moment(comm.lastCommunication.date)
+        const amount = comm.preference.amount as DurationInputArg1
+        const unit = comm.preference.timeUnit[0].toLowerCase() as DurationInputArg2
+        const cutoff = lastComm.add(amount, unit);
+        if (Date.now() < cutoff.valueOf()) reminds.push({
+          friendId: friend.id,
+          firstName: friend.firstName,
+          lastName: friend.lastName,
+          lastComm: comm
+        })
+      })
+    });
+    
+    setReminders(reminds);
+  
+  
+  }, [allFriends])
+  
 
 
-  return (
-    <ImageBackground source={splash} resizeMode="cover" style={styles.image}>
+
+    return reminders ? (
+      <ImageBackground source={splash} resizeMode="cover" style={styles.image}>
     <ScrollView style={styles.list}>
       {reminders.map(reminder => <ReminderCard key={reminder.friendId} reminder={reminder}/>)}
     </ScrollView>
     </ImageBackground>
-  )
+    ) : ( <Text>You are all up to date with your friends!</Text> )
+
 }
 
 const styles = StyleSheet.create({

@@ -1,49 +1,47 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, FAB, Headline, Searchbar } from 'react-native-paper';
+import { FriendContext } from '../App';
 import FriendCard from '../components/FriendCard';
-import { FriendForCard, FriendsProps } from '../types';
+import { Friend, FriendContextValue, FriendForCard, FriendsProps } from '../types';
+
 
 function Friends({navigation, route}: FriendsProps) {
+
+
+  const context: FriendContextValue = useContext(FriendContext);
+
+  const { allFriends } = context;
+
 
 
   /*///////////////////
     STATE
   *////////////////////
-  const mockFriends: Array<FriendForCard> = [
-    {
-      firstName: 'Mitch',
-      lastName: 'Mitchell',
-      lastSeen: new Date('3/10/2020')
-    },
-    {
-      firstName: 'Aonia',
-      lastName: 'Traxler',
-      lastSeen: new Date('12/1/2020')
-    },
-    {
-      firstName: 'Imogen',
-      lastName: 'Hare',
-      lastSeen: new Date('2/10/2022')
-    },
-    {
-      firstName: 'Ben',
-      lastName: 'Ho',
-      lastSeen: new Date('11/4/2020')
-    },
-    {
-      firstName: 'Moira',
-      lastName: 'Fischer',
-      lastSeen: new Date('1/12/2021')
-    },
-  ]
+
 
   const [query, setQuery] = useState<string>('')
 
   const [buttonOneSelected, setButtonOneSelected] = useState(true);
   const [buttonTwoSelected, setButtonTwoSelected] = useState(false);
-  const [friends, setFriends] = useState<Array<FriendForCard>>(mockFriends);
+  const [currentFriends, setCurrentFriends] = useState<Array<FriendForCard>>([]);
   
+  const convertFriends = (allFriends: Array<Friend>) => {
+    return allFriends.map(friend => {
+      return {
+        id: friend.id,
+        firstName: friend.firstName,
+        lastName: friend.lastName,
+        lastSeen: friend.lastComms[0].lastCommunication.date
+      }
+    });
+  };
+
+  useEffect(() => {
+    const cards = convertFriends(allFriends);
+
+    setCurrentFriends(cards);
+  }, [allFriends])
 
 
   /*///////////////////
@@ -51,22 +49,22 @@ function Friends({navigation, route}: FriendsProps) {
   *////////////////////
   const onChangeSearch = (query: string) => {
     setQuery(query);
-    if (query === '') setFriends(mockFriends);
-    const copy = [...mockFriends];
+    if (query === '') setCurrentFriends(convertFriends(allFriends));
+    const copy = [...allFriends];
     const reg = new RegExp(`^${query}.*$`, 'i');
     const filtered = copy.filter((friend) => {
       if (reg.test(friend.firstName) || reg.test(friend.lastName)) return true;
       return false;
     });
 
-    setFriends(filtered);
+    setCurrentFriends(convertFriends(filtered));
     
   };
 
 
   // TODO: Add more sorting options.
   const sortFriends = (direction: string) => {
-    const copy = [...friends];
+    const copy = [...currentFriends];
 
     if (direction === 'ascend') {
       copy.sort((a,b) => {
@@ -78,7 +76,7 @@ function Friends({navigation, route}: FriendsProps) {
         return a.lastSeen.getTime() - b.lastSeen.getTime();
       });
     }
-    setFriends(copy);
+    setCurrentFriends(copy);
   };
 
   const handleButton = (button: string) => {
@@ -97,6 +95,11 @@ function Friends({navigation, route}: FriendsProps) {
 
   const addFriend = () => {
     navigation.navigate('AddFriend');
+  }
+
+  const goToFriend = (id: number) => {
+    const friendData = allFriends.find(item => item.id === id) as Friend;
+    navigation.navigate('Friend', {friend: friendData});
   }
 
 
@@ -121,7 +124,7 @@ function Friends({navigation, route}: FriendsProps) {
       </View>
 
       <View style={styles.friendBox}>
-        {friends.map(friend => <FriendCard key={friend.firstName} friend={friend}/>)}
+        {currentFriends.map(friend => <FriendCard key={friend.id} friend={friend} goToFriend={goToFriend}/>)}
       </View>
       
     </ScrollView>
@@ -162,7 +165,6 @@ const styles = StyleSheet.create({
     opacity: 0.7
   },
 })
-
 
 
 export default Friends;

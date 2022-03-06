@@ -1,29 +1,26 @@
 import React, { FC } from 'react';
 import { StyleSheet,View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Avatar, Headline } from 'react-native-paper';
+import { FriendCardProps } from '../types';
 
 const FriendCard: FC<FriendCardProps> = (props) => {
-
-  const { friend } = props;
+  
+  const { friend, goToFriend } = props;
 
   return (
-    <View style={styles.card}>
-      <Avatar.Image source={{uri: 'http://10.0.2.2:3000/image', width: 200, height: 300}}/>
-      <Headline style={styles.name}>{friend.firstName} {friend.lastName}</Headline>
-      {/* <Paragraph style={styles.para}><Text style={{fontWeight: '700'}}>Last Seen:</Text> {friend.lastSeen.toDateString()}</Paragraph> */}
-    </View> 
+
+    <TouchableOpacity onPress={() => goToFriend(friend.id)}> 
+      <View style={styles.card}>
+        <Avatar.Image source={{uri: 'http://10.0.2.2:3000/image', width: 200, height: 300}}/>
+        <Headline style={styles.name}>{friend.firstName} {friend.lastName}</Headline>
+        {/* <Paragraph style={styles.para}><Text style={{fontWeight: '700'}}>Last Seen:</Text> {friend.lastSeen.toDateString()}</Paragraph> */}
+      </View> 
+    </TouchableOpacity>
+
   )
 }
 
-type FriendForCard = {
-  firstName: string,
-  lastName: string;
-  lastSeen: Date;
-}
-
-interface FriendCardProps {
-  friend: FriendForCard
-}
 
 const styles = StyleSheet.create({
   card: {

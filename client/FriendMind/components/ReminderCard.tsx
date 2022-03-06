@@ -1,57 +1,24 @@
 import { useNavigation } from '@react-navigation/native'
-import React, {FC, useState} from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import React, {FC, useContext, useEffect, useState} from 'react'
+import { StyleSheet, Text, View, Button as NativeButton } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Divider, Headline, Menu, Paragraph } from 'react-native-paper'
-import { Friend, ReminderProps } from '../types'
+import { Button, Divider, Headline, Menu, Modal, Paragraph, Portal } from 'react-native-paper'
+import { FriendContext } from '../App'
+import { Friend, FriendProps, NavigationProps, ReminderProps, RootStackParamList } from '../types'
+
 
 
 const ReminderCard: FC<ReminderProps> = ({reminder}) => {
 
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProps>()
 
-  ///////////////////////
-  // This data will be fetched from database on click.
-  // Use screen navigation to supply correct props to Friend page. 
-  ///////////////
+  const { allFriends } = useContext(FriendContext);
 
-  const mockFriendOpen = () => {
 
-    const mockFriendData: Friend = {
-      firstName: 'Beth',
-      lastName: 'Lee',
-      birthDay: 2,
-      birthMonth: 'March',
-      lastComms: [
-        {
-          preference: {
-            mode: 'Write',
-            timeUnit: 'Days', 
-            amount: 4
-          },
-          lastCommunication: new Date('3/3/2022')
-        },
-        {
-          preference: {
-            mode: 'Meet',
-            timeUnit:  'Weeks',
-            amount: 2
-          },
-          lastCommunication: new Date('2/20/2022')
-        }
-      ],
-      notes: [
-        'She is the best',
-        'Don\'t leave it too long'
-      ]
-    }
-    closeMenu()
-
-    navigation.navigate('Friend', {friendData: mockFriendData})
-
-  }
   const lastComm = reminder.lastComm;
  
+  
   const [visible, setVisible] = useState(false); 
 
   const openMenu = () => {
@@ -62,37 +29,117 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
     setVisible(false);
   }
 
+  const goToFriend = () => {
+    const friendData = allFriends.find(item => item.id === reminder.friendId) as Friend;
+    navigation.navigate('Friend', {friend: friendData});
+  }
+
+  const formatDate = () => {
+    return new Date(lastComm.lastCommunication.date).toDateString();
+  }
+
+  const onDone = () => {
+    // Add communication to database.
+    // Need to get the id back.
+    closeMenu();
+    setModalVisible(true);
+  }
+
+  const addEventHandle = () => {
+    // If the event isn't meet, popup with 'Communication Added!'
+    // If it is, popup with the option to add event.
+      // Add event page - passing on the communication and the friend
+      // If 'Later' - Exit modal. Will have option to add details on event section of friend.
+
+
+
+    hideModal();
+    navigation.navigate('AddEvent');
+  }
+
+  useEffect(() => {
+    console.log(reminder);
+  }, []);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const showModal = () => setModalVisible(true);
+  const hideModal = () => setModalVisible(false);
+  const containerStyle = {backgroundColor: 'white', padding: 20};
+
+
+  const conditionalDoneRender = () => {
+    if (reminder.lastComm.preference.mode === 'Meet') {
+      return (
+        <Portal>
+          <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+            <View>
+              <Headline style={{textAlign: 'center'}}>Great!</Headline>
+              <View style={styles.bottomButtons}>
+              <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={addEventHandle}>
+                Add Event
+              </Button>
+              <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
+                Later
+              </Button>
+            </View> 
+            </View>
+          </Modal>
+        </Portal>
+        )
+    } else {
+      return (
+
+        <Portal>
+          <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+            <View>
+              <Headline style={{textAlign: 'center'}}>Great! Communication Added</Headline>
+              <View style={[styles.bottomButtonsOther]}>
+              <Button mode="contained" style={styles.bottomButtonOther} onPress={hideModal}>
+                Close 
+              </Button>
+            </View> 
+            </View>
+          </Modal>
+        </Portal>
+      )
+    }
+  }
 
   const renderCard = () => {
     return(
       <TouchableOpacity onPress={openMenu}>
+        {conditionalDoneRender()}
         <View style={styles.card}>
-          {formatMessage(lastComm.preference.mode, reminder.firstName)}
+          {formatMessage(
+              lastComm.lastCommunication.type,
+              lastComm.preference.mode, 
+              reminder.firstName)}
           <Paragraph style={styles.para}>
-            The last time was <Text style={{fontWeight: '700', fontSize: 20}}>{reminder.lastComm.lastCommunication.toDateString()}
-            </Text> 
+            The last time was 
+            <Text style={{fontWeight: '700', fontSize: 20}}>
+              {lastComm.lastCommunication.type === 'Added' ? ' Not since adding' : formatDate()}
+              </Text> 
           </Paragraph>
         </View> 
       </TouchableOpacity>
     )
   }
  
-  return (
+  return reminder ? (
     <View>
     <Menu
         visible={visible}
         onDismiss={closeMenu}
         anchor={renderCard()}
         >
-        <Menu.Item onPress={() => console.log('dismiss')} 
+        <Menu.Item onPress={() => onDone()} 
                    title="Done!" />
         <Divider/>
-        <Menu.Item onPress={mockFriendOpen} title="View Friend" />
+        <Menu.Item onPress={goToFriend} title="View Friend" />
         <Divider/>
         <Menu.Item onPress={() => console.log('dismiss')} title="Dismiss" />
       </Menu>
-  </View>
-  )
+  </View> ) : <></>
 }
 
 const styles = StyleSheet.create({
@@ -118,6 +165,31 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     marginTop: 10,
     fontSize: 18
+  },
+  bottomButtons: {
+    bottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 100,
+  },
+  bottomButtonsOther: {
+    bottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 30,
+  },
+  bottomButton: {
+    width: 150,
+    backgroundColor: '#1685EC',
+  },
+  bottomButtonOther: {
+    backgroundColor: '#1685EC',
+    width: 100,
+    height: 40
   }
 });
 
@@ -125,8 +197,8 @@ const styles = StyleSheet.create({
   Make reminder message pretty
   TODO add variations to messages, maybe depending on how long it has been. 
 */
-const formatMessage = (mode: string, firstName: string) => {
-  switch (mode) {
+const formatMessage = (lastCommType: string, preferredMode: string, firstName: string) => {
+  switch (preferredMode) {
   case 'Write': 
     return (
     <Headline style={styles.name}>
@@ -141,9 +213,11 @@ const formatMessage = (mode: string, firstName: string) => {
         <Text>{firstName}</Text>
       </Headline>
       )
-  case 'Talk': 
+  case 'Speak': 
     return <Headline style={styles.name}>Give {firstName} a call!</Headline>
   }
 }
+
+
 
 export default ReminderCard;

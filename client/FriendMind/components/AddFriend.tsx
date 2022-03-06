@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Headline, Subheading, TextInput, Modal, Portal, Button  } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AddFriendProps } from '../types';
+import { addFriend, FriendForAdd } from '../api/FriendAPI';
+import { FriendContext } from '../App';
 
 
 
 function AddFriend({navigation, route}: AddFriendProps) {
+
+  const { allFriends, setAllFriends } = useContext(FriendContext)
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -61,18 +65,25 @@ function AddFriend({navigation, route}: AddFriendProps) {
     TODO: API call to add Friend
     TODO: Add small modal for success.
   */
-  const handleAddFriend = () => {
-    const friend: Friend = {
+  const handleAddFriend = async () => {
+    const friend: FriendForAdd = {
       firstName: firstName,
       lastName: lastName,
       birthDay: parseInt(dayValue),
       birthMonth: monthValue,
-      commPreferences: commPreferences
-    }
+    };
+    
 
+    const resp = await addFriend(1, friend, commPreferences);
 
-  
-    navigation.goBack();
+    setAllFriends([...allFriends, resp]);
+
+    console.log('====================================');
+    console.log(resp);
+    console.log('====================================');
+
+    navigation.navigate('Friend', {friend: resp});
+    
 
   }
 
@@ -144,8 +155,8 @@ function AddFriend({navigation, route}: AddFriendProps) {
                 onValueChange={(value) => setSelectedMode(value)}
                 style={styles.modePicker}>
                 <Picker.Item label="Meet" value="Meet"/>    
-                <Picker.Item label="Write/Message"  value="Write/Message"/>  
-                <Picker.Item label="Speak" value="Speak"/> 
+                <Picker.Item label="Write/Message"  value="Write"/>  
+                <Picker.Item label="Speak" value="Talk"/> 
               </Picker>
             </View>
           </View>
