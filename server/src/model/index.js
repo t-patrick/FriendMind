@@ -1,3 +1,4 @@
+const { fn } = require("sequelize");
 const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(process.env.DB, process.env.USER, process.env.PASSWORD, {
@@ -19,7 +20,6 @@ db.meetingnote = require("./meetingnote.js")(sequelize, Sequelize.DataTypes);
 db.meetingimage = require("./meetingimage.js")(sequelize, Sequelize.DataTypes);
 db.communication = require("./communication.js")(sequelize, Sequelize.DataTypes);
 db.commpreference = require('./communcationpreference.js')(sequelize, Sequelize.DataTypes);
-
 
 /* 
   User has many friends, friends only have one user, this isn't facebook after all.
@@ -62,6 +62,7 @@ has a communication, to find the date.
 has many meeting notes and images.
 */
 db.meeting.belongsTo(db.communication);
+db.communication.hasOne(db.meeting);
 
 db.meeting.hasMany(db.meetingnote);
 db.meetingnote.belongsTo(db.meeting);
@@ -70,7 +71,20 @@ db.meeting.hasMany(db.meetingimage);
 db.meetingimage.belongsTo(db.meeting); 
 
 (async () => {
-  await sequelize.sync();
+  try {
+
+    await sequelize.sync({});
+
+    // await db.user.create({
+    //   email: 'email',
+    //   firstName: 'Tim',
+    //   lastName: 'Patrick',
+    //   password: 'password'
+    // })
+    
+  } catch (e) {
+    console.log(e);
+  }
 })();
 
 module.exports = db;

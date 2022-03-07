@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Platform,  } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { Avatar, Button, Headline, List, Modal, Paragraph, Portal, TextInput, RadioButton } from 'react-native-paper';
-import { addFriendNote, getEvents, postCommunication } from '../api/FriendAPI';
+import { addFriendNote, getEvents, postCommunication, postEvent} from '../api/FriendAPI';
 import { FriendContext } from '../App';
-import { Friend as FriendType, FriendProps, FullEvent } from '../types';
+import { Communication, Friend as FriendType, FriendProps, FullEvent } from '../types';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
@@ -26,6 +26,7 @@ function Friend({navigation, route}: FriendProps) {
   const [commValue, setCommValue] = useState<"Meet" | "Write" | "Talk" | "Added">('Meet');
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
+  const [currentEvent, setCurrentEvent] = useState<FullEvent>();
   
   useEffect(() => {
     setFriendData(route.params.friend);
@@ -38,6 +39,9 @@ function Friend({navigation, route}: FriendProps) {
 
   const updateEvents = async () => {
     const evs = await getEvents(route.params.friend.id);
+    console.log('====================================');
+    console.log(evs);
+    console.log('====================================');
     setEvents(evs);
   };
   
@@ -81,14 +85,56 @@ function Friend({navigation, route}: FriendProps) {
     const comm = await postCommunication(friendData?.id as number, {
       date: date,
       type: commValue,
-    })
+    });
+
+    const newEvent: FullEvent = comm;
+
+    const newEvents = [...events, newEvent];
+    newEvents.sort((a,b) => new Date(a.communication.date).getTime() - new Date(b.communication.date).getTime());
+
+    setEvents(newEvents);
+
+    hideModal();
+    // Need to trigger a refetch. Or fetch one friend as update state.
   }
 
   const addEvent = async () => {
-    console.log('====================================');
-    console.log('event');
-    console.log('====================================');
+    const comm = await postCommunication(friendData?.id as number, {
+      date: date,
+      type: commValue,
+    });
+
+    const event = await postEvent(comm.id, {
+      location: location, 
+      title: title
+    });
+
+    hideModal();
+    updateEvents();
   }
+
+  const postUpdateEvent = async () => {
+    const comm = currentEvent?.communication as Communication;
+    const id = comm.id as number;
+
+    const event = await postEvent(id, {
+      location: location, 
+      title: title
+    });
+
+    hideModal();
+    setTitle('');
+    setLocation('');
+    setDate(new Date())
+    updateEvents();
+  }
+
+
+
+    // const addEventDetailsforComm = async (ev: FullEvent) => {
+    //   const event = await postEvent(ev);
+
+    // }
 
   /* 
   /// DATEPICKER
@@ -118,7 +164,10 @@ function Friend({navigation, route}: FriendProps) {
     showMode('date');
   };
 
-  const renderDatePicker = () => {
+  const renderDatePicker = (ev?: FullEvent) => {
+
+    const dateForPicker = ev !== undefined ? new Date(ev.communication.date) : date as Date
+
     return (
       <View>
         <View>
@@ -127,7 +176,7 @@ function Friend({navigation, route}: FriendProps) {
         <TextInput
           disabled
           label="Date"
-          value={date.toDateString()}
+          value={dateForPicker.toDateString()}
           placeholderTextColor='black'
           autoComplete={false}
           style={{marginTop: 10, marginBottom: 20}}
@@ -135,7 +184,7 @@ function Friend({navigation, route}: FriendProps) {
         { show && (
           <DateTimePicker
           testID="dateTimePicker"
-          value={date}
+          value={dateForPicker}
           display="default"
           mode= 'date'
           onChange={onChange}
@@ -182,8 +231,8 @@ function Friend({navigation, route}: FriendProps) {
               <Text>Meet</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
-              <RadioButton value="Communication" />
-              <Text>Communication</Text>
+              <RadioButton value="Speak" />
+              <Text>Speak</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
               <RadioButton value="Event" />
@@ -204,11 +253,11 @@ function Friend({navigation, route}: FriendProps) {
     </Modal>
     )
     }
-    if (currentModal === 'event') {
+    if (currentModal === 'event'  || currentModal === 'updateEvent') {
       return (
         <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
         <Headline>Add Event</Headline>
-        {renderDatePicker()}
+        {currentModal === 'updateEvent' ? renderDatePicker(currentEvent) : renderDatePicker}
         <TextInput
           label="Title"
           autoComplete={false}
@@ -227,9 +276,11 @@ function Friend({navigation, route}: FriendProps) {
           />
     
         <View style={styles.bottomButtons}>
-          <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={addEvent}>
-            Add
-          </Button>
+          {currentModal === 'event' ? 
+            <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={addEvent}>Add</Button>
+          :
+            <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={postUpdateEvent}>Add</Button>
+          }
           <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
             Cancel
           </Button>
@@ -245,12 +296,20 @@ function Friend({navigation, route}: FriendProps) {
     showModal();
   }
 
+  const updateEvent = (ev: FullEvent) => {
+    setCurrentEvent(ev);
+    setCurrentModal('updateEvent')
+    showModal();
+  }
+
+
+
   const renderEvent = (ev: FullEvent) => {
     
     console.log(ev);
     
     return ev.event ? (
-      <TouchableOpacity>
+    <TouchableOpacity>
       <View style={styles.card}>
         <Paragraph style={styles.para}>
           You saw {friendData?.firstName} on {new Date(ev.communication.date).toDateString()}
@@ -263,7 +322,12 @@ function Friend({navigation, route}: FriendProps) {
         </Paragraph> 
       </View> 
     </TouchableOpacity>
-    ) : <View><Text>You met on { new Date(ev.communication.date).toDateString() }. You haven't added details Yet</Text><Button>Add Details</Button></View>
+    ) : 
+    <View style={[styles.card, {backgroundColor: '#1685EC'}]}>
+      <Text style={styles.para}>You met on { new Date(ev.communication.date).toDateString() }</Text> 
+      <Text style={styles.para}>You haven't added details yet</Text>
+        <Button onPress={() => updateEvent(ev)}>Add Details</Button>
+    </View>
   }
 
   if (friendData) {

@@ -99,6 +99,7 @@ function Friends({navigation, route}: FriendsProps) {
   }
 
   const goToFriend = (id: number) => {
+    console.log('click works');
     const friendData = allFriends.find(item => item.id === id) as Friend;
     navigation.navigate('Friend', {friend: friendData});
   }

@@ -1,11 +1,11 @@
 
 module.exports = (sequelize, DataTypes) => {
   const CommunicationPreference = sequelize.define('CommunicationPreference', {
-    type: {
+    mode: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    timeunit: {
+    timeUnit: {
       type: DataTypes.STRING,
       allowNull: false
     },

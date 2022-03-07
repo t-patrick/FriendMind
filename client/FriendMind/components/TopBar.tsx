@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Image, StyleSheet, View } from 'react-native';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { Appbar } from 'react-native-paper'
-import { toggleDrawer } from '../navigation/RootNavigation';
+import { toggleDrawer, navigate } from '../navigation/RootNavigation';
 
 function TopBar() {
 
@@ -11,18 +12,24 @@ function TopBar() {
 const [burgerShowing, setBurgerShowing] = useState(true);
 
   return (
-    <View>
+    <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between'}}>
     <Appbar.Header style={[styles.bar]}>
-      {burgerShowing ? <Appbar.Action icon="menu" onPress={toggleDrawer}/> : <></> }
+      <Appbar.Action icon="home" onPress={() => navigate('Home')}/>
+      <Appbar.Action icon="account-group" onPress={() => navigate('Friends')}/>
       <Logo/>
     </Appbar.Header>
     </View>
   )
 }
 
+const goHome = () => {
+  console.log('click worked');
+  navigate('Home');
+}
+
 const Logo = () => {
   return (
-    <Image
+      <Image
         style={styles.logo}
         source={require('../assets/images/fm.png')}
       />
@@ -32,6 +39,7 @@ const Logo = () => {
 const styles = StyleSheet.create({
   bar: {
     height: 50,
+    width: '100%',
     marginTop: -15,
     backgroundColor: 'white',
     borderBottomColor: 'rgba(0,0,0,0.2)',

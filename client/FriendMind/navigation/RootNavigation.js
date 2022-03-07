@@ -8,6 +8,13 @@ export function navigate(name, params) {
     navigationRef.navigate(name, params);
   }
 }
+
+export function jumpTo(name, params) {
+  if (navigationRef.isReady()) {
+    navigationRef.navigate(name, params);
+  }
+}
+
 export function toggleDrawer() {
   if (navigationRef.isReady()) {
     navigationRef.dispatch(DrawerActions.toggleDrawer());

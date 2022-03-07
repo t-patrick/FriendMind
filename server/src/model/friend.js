@@ -12,8 +12,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-    birthday: {
-      type: DataTypes.DATE,
+    birthDay: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    birthMonth: {
+      type: DataTypes.STRING,
       allowNull: true
     },
     profilePictureUrl: {

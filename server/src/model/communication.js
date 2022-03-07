@@ -1,3 +1,9 @@
+/* 
+  types: 
+    'Meet', 'Speak', 'Write', 'Added'
+*/
+
+
 module.exports = (sequelize, DataTypes) => {
   const Communication = sequelize.define('Communication', {
     type: {

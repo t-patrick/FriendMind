@@ -79,7 +79,7 @@ async function addMeeting (userId, friendId, data) {
 
   */
   try {
-    const friend = await db.meeting .findOne({ where: {UserId: userId, id: friendId}});
+    const friend = await db.meeting.findOne({ where: {UserId: userId, id: friendId}});
 
     const comm = await friend.createCommunication({
       UserId: userId,

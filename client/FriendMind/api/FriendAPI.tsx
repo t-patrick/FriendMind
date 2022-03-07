@@ -6,7 +6,7 @@
   b) create new friend with info
 */
 
-import { Communication, FriendForAdd, MeetEvent } from "../types";
+import { Communication, FriendForAdd, FullEvent, MeetEvent } from "../types";
 
 /* 
   The format I need to end up with is 'Friend'
@@ -20,7 +20,7 @@ export const getFriends = async (userId: number) => {
       .then(friends => friends.json())
 } 
 
-export const getEvents = async (friendId: number) => {
+export const getEvents = async (friendId: number): Promise<Array<FullEvent>> => {
   return fetch(`${baseUrl}/meetings?id=${friendId}`)
       .then(events => events.json())
 } 

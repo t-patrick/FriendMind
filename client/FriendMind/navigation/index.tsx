@@ -40,7 +40,7 @@ export default function Navigation() {
           <Stack.Screen name="Drawer" component={Drawer} options={{headerShown: false}}/>
           <Stack.Group screenOptions={{presentation: 'modal', headerShown: false}}>
             <Stack.Screen name="Friend" component={Friend}/>
-            <Stack.Screen name="AddEvent" initialParams={{location: 'Dunno'}} component={AddEvent}/>
+            <Stack.Screen name="AddEvent" component={AddEvent}/>
             <Stack.Screen name="AddFriend" component={AddFriend}/>
           </Stack.Group>
         </Stack.Navigator>
