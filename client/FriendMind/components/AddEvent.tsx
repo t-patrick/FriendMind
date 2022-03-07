@@ -3,6 +3,7 @@ import { Platform, StyleSheet, Text, View } from 'react-native'
 import { Appbar, Button, Headline, TextInput } from 'react-native-paper'
 import { AddEventProps } from '../types'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { postEvent } from '../api/FriendAPI';
 
 /* 
   Need to create this.
@@ -10,29 +11,16 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 function AddEvent({navigation, route}: AddEventProps) {
 
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
 
+  const onSubmit = async () => {
+    const event = await postEvent(route.params.communication.id as number, {
+      title,
+      location
+    });
 
-  
-  const onChange = (event: any, selectedDate?: any) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
-    setDate(currentDate);
-  };
-
-  const showMode = (currentMode: string) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const onSubmit = () => {
-
+    navigation.goBack();
   }
 
   return (
@@ -44,45 +32,27 @@ function AddEvent({navigation, route}: AddEventProps) {
         autoComplete={false}
         style={styles.input}
         selectionColor='black'
+        value={title}
+        onChangeText={value => setTitle(value)}
       />
       <TextInput
         label="Location"
         placeholderTextColor='black'
         autoComplete={false}
         style={styles.input}
+        value={location}
+        onChangeText={value => setLocation(value)}
       />
-      <TextInput
-        disabled
-        label="Date"
-        value={date.toDateString()}
-        placeholderTextColor='black'
-        autoComplete={false}
-        style={styles.input}
-      />
-      <View>
-        <View>
-          <Button onPress={showDatepicker}>Add Date</Button>
-        </View>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            display="default"
-            mode= 'date'
-            onChange={onChange}
-          />
-        )}
-    </View>
   
       <View style={styles.bottomButtons}>
-        <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]}>
+        <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={onSubmit}>
           Add
         </Button>
         <Button mode="contained" style={styles.bottomButton}>
           Cancel
         </Button>
       </View>
-    </View>
+</View>
   )
 }
 

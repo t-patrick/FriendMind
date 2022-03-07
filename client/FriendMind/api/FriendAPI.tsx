@@ -6,6 +6,8 @@
   b) create new friend with info
 */
 
+import { Communication, FriendForAdd, MeetEvent } from "../types";
+
 /* 
   The format I need to end up with is 'Friend'
   UserId defaults to 1 for now
@@ -18,7 +20,12 @@ export const getFriends = async (userId: number) => {
       .then(friends => friends.json())
 } 
 
-export const addFriend = async (userId: number, friend: FriendForAdd, preferences: Array<CommPreference>) => {
+export const getEvents = async (friendId: number) => {
+  return fetch(`${baseUrl}/meetings?id=${friendId}`)
+      .then(events => events.json())
+} 
+
+export const  addFriend = async (userId: number, friend: FriendForAdd, preferences: Array<CommPreference>) => {
   return fetch(`${baseUrl}/friend?id=${userId}`, {
     method: 'POST',
     headers: {
@@ -38,17 +45,27 @@ export const addFriendNote = (id: number, note: Note) => {
   }).then(resp => resp.json());
 }
 
-export const postMeeting = (id: number, note: Note) => {
-
-};
-
-
-export type FriendForAdd = {
-  firstName: string,
-  lastName: string,
-  birthDay: number,
-  birthMonth: string
+export const postCommunication = (friendId: number, communication: Communication) => {
+  return fetch(`${baseUrl}/communication?id=${friendId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(communication)
+  }).then(resp => resp.json());
 }
+export const postEvent = (commId: number, event: MeetEvent) => {
+  return fetch(`${baseUrl}/meeting?id=${commId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(event)
+  }).then(resp => resp.json());
+}
+
+
+
 
 export type Friend = {
   id: number,
@@ -57,7 +74,8 @@ export type Friend = {
   birthDay: number,
   birthMonth: string,
   lastComms: Array<LastComm>,
-  notes?: Array<string>
+  notes?: Array<string>,
+  imageUrl? : string
 }
 
 export type FriendWithLastComms = {

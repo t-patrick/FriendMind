@@ -18,7 +18,7 @@ export type RootStackParamList = {
   Drawer: undefined;
   Friend: {friend: Friend};
   AddFriend: undefined;
-  AddEvent: undefined
+  AddEvent: {friendId: number, communication: Communication}
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -61,6 +61,7 @@ export type Friend = {
   birthMonth: string,
   lastComms: Array<LastComm>,
   notes?: Array<Note>
+  profilePictureUrl?: string
 }
 
 export type Note = {
@@ -85,11 +86,27 @@ export type LastComm = {
 }
 
 export type Communication = {
+  id?: number
   date: Date,
-  id: number,
   type: 'Write' | 'Talk' | 'Meet' | 'Added'
 }
 
+export type FriendForAdd = {
+  firstName: string,
+  lastName: string,
+  birthDay: number,
+  birthMonth: string
+  profilePictureUrl?: string
+}
+
+export type MeetEvent = {
+  title: string,
+  location: string 
+}
+export type FullEvent = {
+  communication: Communication,
+  event: MeetEvent
+}
 
 export type CommPreference = {
   mode: 'Write' | 'Talk' | 'Meet';
@@ -103,6 +120,7 @@ export type FriendForCard = {
   lastName: string;
   lastSeen: Date;
 }
+
 
 export type FriendContextValue = {
   allFriends: Array<Friend>,

@@ -1,10 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Headline, Subheading, TextInput, Modal, Portal, Button  } from 'react-native-paper';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { Headline, Subheading, TextInput, Modal, Portal, Button, Avatar  } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
-import { AddFriendProps } from '../types';
-import { addFriend, FriendForAdd } from '../api/FriendAPI';
+import { AddFriendProps, FriendForAdd } from '../types';
+import { addFriend } from '../api/FriendAPI';
 import { FriendContext } from '../App';
+import * as ImagePicker from 'expo-image-picker';
+import { ScrollView } from 'react-native-gesture-handler';
+
 
 
 
@@ -31,7 +34,24 @@ function AddFriend({navigation, route}: AddFriendProps) {
   const hideModal = () => setVisible(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
 
- 
+  const [image, setImage] = useState<any>(null);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
   // Day error validation
 
   const setDay = (day:string) => {
@@ -71,19 +91,14 @@ function AddFriend({navigation, route}: AddFriendProps) {
       lastName: lastName,
       birthDay: parseInt(dayValue),
       birthMonth: monthValue,
+      profilePictureUrl: image
     };
-    
 
+    console.log(friend);
+    
     const resp = await addFriend(1, friend, commPreferences);
-
     setAllFriends([...allFriends, resp]);
-
-    console.log('====================================');
-    console.log(resp);
-    console.log('====================================');
-
     navigation.navigate('Friend', {friend: resp});
-    
 
   }
 
@@ -91,7 +106,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
     TODO: Separate out into smaller components
   */
   return (
-    <View style={{flex: 1, padding: 30}}>
+    <ScrollView style={{flex: 1, padding: 30}}>
       {/* <Text style={styles.header}>Add Friend</Text> */}
       <Headline style={styles.header}>Add Friend</Headline>
       <TextInput
@@ -139,6 +154,11 @@ function AddFriend({navigation, route}: AddFriendProps) {
           <Picker.Item label="November" value="November"/> 
           <Picker.Item label="December" value="December"/> 
         </Picker>
+      </View>
+      
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Button onPress={pickImage}>Pick an profile picture image</Button>
+        {image && <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />}
       </View>
         <Subheading style={{marginTop: 40, fontSize: 20}}>Communication Preferences:</Subheading>
         <Button icon="plus" mode="contained" color="#3EB489" style={{marginTop: 20}} onPress={showModal}>
@@ -191,9 +211,11 @@ function AddFriend({navigation, route}: AddFriendProps) {
         </Modal>
       </Portal>
 
+
       <View>
         {commPreferences.map(comm => <Text key={comm.mode + comm.amount}>{comm.mode} every {comm.amount} {comm.timeUnit}</Text>)}
       </View>
+
 
       <View style={styles.bottomButtons}>
         <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={handleAddFriend}>
@@ -203,7 +225,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
           Back
         </Button>
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
@@ -272,7 +294,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: 100,
+    marginTop: 50,
+    marginBottom: 50
   },
   bottomButton: {
     width: 150,

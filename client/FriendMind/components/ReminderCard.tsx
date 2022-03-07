@@ -1,11 +1,14 @@
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import React, {FC, useContext, useEffect, useState} from 'react'
-import { StyleSheet, Text, View, Button as NativeButton } from 'react-native'
+import { StyleSheet, Text, View, Button as NativeButton, Platform } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Button, Divider, Headline, Menu, Modal, Paragraph, Portal } from 'react-native-paper'
+import { Button, Divider, Headline, Menu, Modal, Paragraph, Portal, TextInput } from 'react-native-paper'
+import { postCommunication } from '../api/FriendAPI'
 import { FriendContext } from '../App'
 import { Friend, FriendProps, NavigationProps, ReminderProps, RootStackParamList } from '../types'
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 
 
@@ -15,6 +18,30 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
 
   const { allFriends } = useContext(FriendContext);
 
+
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+
+
+  useEffect(() => {
+    setDate(new Date(Date.now()));
+  }, [])
+  
+  const onChange = (event: any, selectedDate?: any) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode: string) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
 
   const lastComm = reminder.lastComm;
  
@@ -30,6 +57,7 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
   }
 
   const goToFriend = () => {
+    closeMenu();
     const friendData = allFriends.find(item => item.id === reminder.friendId) as Friend;
     navigation.navigate('Friend', {friend: friendData});
   }
@@ -45,16 +73,24 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
     setModalVisible(true);
   }
 
-  const addEventHandle = () => {
-    // If the event isn't meet, popup with 'Communication Added!'
-    // If it is, popup with the option to add event.
-      // Add event page - passing on the communication and the friend
-      // If 'Later' - Exit modal. Will have option to add details on event section of friend.
-
-
+  const addEventHandle = async () => {
+    const comm = await postCommunication(reminder.friendId, {
+      date: date,
+      type: reminder.lastComm.preference.mode,
+    });
 
     hideModal();
-    navigation.navigate('AddEvent');
+    navigation.navigate('AddEvent', {friendId: reminder.friendId, communication: comm});
+  }
+
+
+  const onlyAddCommunication =  async () => {
+    const comm = await postCommunication(reminder.friendId, {
+      date: date,
+      type: reminder.lastComm.preference.mode,
+    });
+
+    hideModal();
   }
 
   useEffect(() => {
@@ -66,6 +102,34 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
   const hideModal = () => setModalVisible(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
 
+  const datePicker = () => {
+    return (
+      <View>
+        <TextInput
+          disabled
+          label="Date"
+          value={date.toDateString()}
+          placeholderTextColor='black'
+          autoComplete={false}
+          style={{marginTop: 30, marginBottom: 20}}
+        />
+        <View>
+          <Button onPress={showDatepicker}>Change Date</Button>
+        </View>
+        { show && (
+          <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          display="default"
+          mode= 'date'
+          onChange={onChange}
+          />
+          )
+        }
+    </View>
+    )
+  }
+
 
   const conditionalDoneRender = () => {
     if (reminder.lastComm.preference.mode === 'Meet') {
@@ -74,14 +138,18 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
           <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
             <View>
               <Headline style={{textAlign: 'center'}}>Great!</Headline>
+              {datePicker()}
               <View style={styles.bottomButtons}>
               <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={addEventHandle}>
                 Add Event
               </Button>
-              <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
+              <Button mode="contained" style={styles.bottomButton} onPress={onlyAddCommunication}>
                 Later
               </Button>
             </View> 
+              <Button mode="contained" style={[styles.bottomButton, {marginLeft: 'auto', marginRight: 'auto', backgroundColor: '#EC163C'}]} onPress={hideModal}>
+                Cancel
+              </Button>
             </View>
           </Modal>
         </Portal>
@@ -92,10 +160,14 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
         <Portal>
           <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
             <View>
-              <Headline style={{textAlign: 'center'}}>Great! Communication Added</Headline>
+              <Headline style={{textAlign: 'center'}}>Great!</Headline>
+              {datePicker()}
               <View style={[styles.bottomButtonsOther]}>
+              <Button mode="contained" style={styles.bottomButtonOther} onPress={addEventHandle}>
+                Add Communication 
+              </Button>
               <Button mode="contained" style={styles.bottomButtonOther} onPress={hideModal}>
-                Close 
+                Cancel 
               </Button>
             </View> 
             </View>
@@ -172,7 +244,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: 100,
+    marginTop: 40,
   },
   bottomButtonsOther: {
     bottom: 10,
@@ -188,7 +260,6 @@ const styles = StyleSheet.create({
   },
   bottomButtonOther: {
     backgroundColor: '#1685EC',
-    width: 100,
     height: 40
   }
 });

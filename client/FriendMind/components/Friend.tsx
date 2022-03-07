@@ -1,30 +1,51 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Avatar, Button, Headline, List, Modal, Portal, TextInput } from 'react-native-paper';
-import { addFriendNote } from '../api/FriendAPI';
+import { StyleSheet, Text, View, Platform,  } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { Avatar, Button, Headline, List, Modal, Paragraph, Portal, TextInput, RadioButton } from 'react-native-paper';
+import { addFriendNote, getEvents, postCommunication } from '../api/FriendAPI';
 import { FriendContext } from '../App';
-import { Friend as FriendType, FriendProps } from '../types';
+import { Friend as FriendType, FriendProps, FullEvent } from '../types';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 let count = 1; 
 
+type CommType = "Meet" | "Write" | "Talk" | "Added"
 
 function Friend({navigation, route}: FriendProps) {
-
+  
   const data = useContext(FriendContext);
-
+  
+  const [events, setEvents] = useState<Array<FullEvent>>([]);
   const [friendData, setFriendData] = useState<FriendType>();
+  const [currentModal, setCurrentModal] = useState('')
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [commValue, setCommValue] = useState<"Meet" | "Write" | "Talk" | "Added">('Meet');
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
   
   useEffect(() => {
     setFriendData(route.params.friend);
+    updateEvents();
+  }, []);
+
+  useEffect(() => {
+    setDate(new Date(Date.now()));
   }, [])
+
+  const updateEvents = async () => {
+    const evs = await getEvents(route.params.friend.id);
+    setEvents(evs);
+  };
   
 
-  const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   // const containerStyle = {backgroundColor: 'white', padding: 20};
-  const [noteValue, setNoteValue] = useState<string>('')
+  const [noteValue, setNoteValue] = useState<string>('note')
 
   const getColor = () => {
     count++;
@@ -54,29 +75,205 @@ function Friend({navigation, route}: FriendProps) {
         v = n % 100;
     return n + (s[(v - 20) % 10] || s[v] || s[0]);
   }
+
+
+  const addCommunication = async () => {
+    const comm = await postCommunication(friendData?.id as number, {
+      date: date,
+      type: commValue,
+    })
+  }
+
+  const addEvent = async () => {
+    console.log('====================================');
+    console.log('event');
+    console.log('====================================');
+  }
+
+  /* 
+  /// DATEPICKER
+  */
+
+
+  const containerStyle = {backgroundColor: 'white', padding: 20};
+
+
+  const changeCommValue = (value: string) => {
+    const val = value as CommType
+    setCommValue(val);
+  }
+  
+  const onChange = (event: any, selectedDate?: any) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode: string) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const renderDatePicker = () => {
+    return (
+      <View>
+        <View>
+          <Button onPress={showDatepicker}>Add Date</Button>
+        </View>
+        <TextInput
+          disabled
+          label="Date"
+          value={date.toDateString()}
+          placeholderTextColor='black'
+          autoComplete={false}
+          style={{marginTop: 10, marginBottom: 20}}
+        />
+        { show && (
+          <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          display="default"
+          mode= 'date'
+          onChange={onChange}
+          />
+          )
+        }
+    </View>
+    )
+  }
+
+
+  const renderModal = () => {
+    if (currentModal === 'note') {
+      return (
+      <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalStyle}>
+        <Headline>Add note for {friendData!.firstName}</Headline>
+        <TextInput mode='outlined' 
+                  label='Note' 
+                  onChangeText={(value) => setNoteValue(value)}
+                  autoComplete={false}
+                  style={{marginTop: 10}}/>
+        <View style={styles.bottomButtons}>
+          <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={handleAddNote}>
+            Add Note
+          </Button>
+          <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
+            Cancel
+          </Button>
+        </View>
+    </Modal>
+    )
+    }
+
+    if (currentModal === 'comm') {
+      return (
+
+      <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+        <Headline style={{marginBottom: 30}}>Add Communication</Headline>
+          <View>
+            <RadioButton.Group onValueChange={(newValue) => changeCommValue(newValue)} value={commValue}>
+            <View>
+            <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
+              <RadioButton value="Meet" />
+              <Text>Meet</Text>
+            </View>
+            <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
+              <RadioButton value="Communication" />
+              <Text>Communication</Text>
+            </View>
+            <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
+              <RadioButton value="Event" />
+              <Text>Event</Text>
+            </View>
+          </View>
+          </RadioButton.Group>
+          {renderDatePicker()}
+          <View style={styles.bottomButtons}>
+            <Button mode="contained" style={styles.bottomButton} onPress={addCommunication}>
+              Add
+            </Button>
+            <Button mode="contained" style={[styles.bottomButton, {marginLeft: 'auto', marginRight: 'auto', backgroundColor: '#EC163C'}]} onPress={hideModal}>
+              Cancel
+            </Button>
+          </View> 
+        </View>
+    </Modal>
+    )
+    }
+    if (currentModal === 'event') {
+      return (
+        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+        <Headline>Add Event</Headline>
+        {renderDatePicker()}
+        <TextInput
+          label="Title"
+          autoComplete={false}
+          style={[styles.input, {marginTop: 30}]}
+          selectionColor='black'
+          value={title}
+          onChangeText={value => setTitle(value)}
+          />
+        <TextInput
+          label="Location"
+          placeholderTextColor='black'
+          autoComplete={false}
+          style={styles.input}
+          value={location}
+          onChangeText={value => setLocation(value)}
+          />
+    
+        <View style={styles.bottomButtons}>
+          <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={addEvent}>
+            Add
+          </Button>
+          <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
+            Cancel
+          </Button>
+        </View>
+      </Modal>
+    )
+    }
+    
+  }
+
+  const setModal = (type: string) => {
+    setCurrentModal(type);
+    showModal();
+  }
+
+  const renderEvent = (ev: FullEvent) => {
+    
+    console.log(ev);
+    
+    return ev.event ? (
+      <TouchableOpacity>
+      <View style={styles.card}>
+        <Paragraph style={styles.para}>
+          You saw {friendData?.firstName} on {new Date(ev.communication.date).toDateString()}
+        </Paragraph>
+          <Text style={styles.name}>
+             "{ev.event.title}"
+          </Text> 
+        <Paragraph style={styles.para}>
+          at {ev.event.location}
+        </Paragraph> 
+      </View> 
+    </TouchableOpacity>
+    ) : <View><Text>You met on { new Date(ev.communication.date).toDateString() }. You haven't added details Yet</Text><Button>Add Details</Button></View>
+  }
+
   if (friendData) {
     return (
       <ScrollView style={styles.container}>
         <Portal>
-          <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalStyle}>
-            <Headline>Add note for {friendData!.firstName}</Headline>
-            <TextInput mode='outlined' 
-                      label='Note' 
-                      onChangeText={(value) => setNoteValue(value)}
-                      autoComplete={false}
-                      style={{marginTop: 10}}/>
-            <View style={styles.bottomButtons}>
-              <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={handleAddNote}>
-                Add Note
-              </Button>
-              <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
-                Cancel
-              </Button>
-            </View>
-          </Modal>
+          {renderModal()}
         </Portal>
         <View style={styles.mainBox}>
-          <Avatar.Image source={{uri: 'http://10.0.2.2:3000/image'}} size={160} style={styles.image}/>
+          <Avatar.Image source={{uri: friendData.profilePictureUrl || 'http://10.0.2.2:3000/image'}} size={160} style={styles.image}/>
           <Text style={styles.title}>{friendData.firstName} {friendData.lastName}</Text>
           <View style={styles.lastComms}>
             {friendData.lastComms.map(comm => 
@@ -96,15 +293,22 @@ function Friend({navigation, route}: FriendProps) {
                   )
                 })}
                 <Text style={{width: 300, backgroundColor: getColor(), padding: 10, fontSize: 18}}>
-                <Button icon="plus" onPress={showModal}>
+                <Button icon="plus" onPress={() => setCurrentModal('note')}>
                   New
                 </Button>
                 </Text>
             </List.Accordion>
           </View>
+          <View style={{flexDirection: 'row', marginLeft: 'auto', marginRight: 'auto', marginTop: 10}}>
+            <Button onPress={() => setModal('comm')}>Add Communication</Button>
+            <Button onPress={() => setModal('event')}>Add Event</Button>
+          </View>
         </View>
+          <Headline style={{marginLeft: 'auto', marginRight: 'auto', fontSize: 30, marginTop: 10, }}>Past Meets:</Headline>
         <View>
-          <Headline style={{marginLeft: 20, fontSize: 30, marginTop: 20}}>Past Meets:</Headline>
+          <View style={{marginLeft: 'auto', marginRight: 'auto', marginTop: 30, width: '80%'}}>
+            {events && (events.map(ev => renderEvent(ev)))}
+          </View>
         </View>
       </ScrollView> 
     )
@@ -164,7 +368,37 @@ const styles = StyleSheet.create({
   modalStyle: {
     backgroundColor: 'white', 
     padding: 20,
-  }
+  },
+  card: {
+    marginBottom: 40,
+    width: '100%',
+    backgroundColor: 'rgba(62, 180, 137, 0.8)',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  name: {
+    fontSize: 30,
+    fontWeight: '600',
+    color: 'white',
+    fontFamily: 'Roboto'
+  },
+  para: {
+    color: 'white',
+    fontFamily: 'Roboto',
+    flexShrink: 1,
+    marginTop: 10,
+    fontSize: 18
+  },
+  header: {
+    marginBottom: 20,
+    fontSize: 28,
+    color: 'black'
+  },
+  input: {
+    marginBottom: 20,
+  },
 });
 
 

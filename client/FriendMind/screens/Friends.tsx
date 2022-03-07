@@ -33,6 +33,7 @@ function Friends({navigation, route}: FriendsProps) {
         firstName: friend.firstName,
         lastName: friend.lastName,
         lastSeen: friend.lastComms[0].lastCommunication.date
+        
       }
     });
   };
