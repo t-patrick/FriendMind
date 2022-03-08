@@ -10,10 +10,7 @@ function Friends({navigation, route}: FriendsProps) {
 
 
   const context: FriendContextValue = useContext(FriendContext);
-
   const { allFriends } = context;
-
-
 
   /*///////////////////
     STATE
