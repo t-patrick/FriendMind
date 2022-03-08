@@ -60,10 +60,12 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 20,
     fontSize: 28,
-    color: 'black'
+    color: 'black',
+    fontFamily: 'Manrope_400Regular'
   },
   input: {
     marginBottom: 20,
+    fontFamily: 'Manrope_400Regular'
   },
   bottomButtons: {
     bottom: 10,
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 'auto',
     marginTop: 60,
+    fontFamily: 'Manrope_400Regular'
   },
   bottomButton: {
     width: 120,

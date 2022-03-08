@@ -101,7 +101,7 @@ const relevantDate = (date) => {
   console.log(d.diff(new Date(), 'days'));
   const diff = d.diff(new Date(), 'days');
 
-  if (arr.includes(diff) || diff % 2 === 0) return true;
+  if (arr.includes(diff) || diff % 2 === 0 && diff > 0) return true;
   return false;
 }
 

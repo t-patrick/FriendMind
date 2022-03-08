@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { Headline, Subheading, TextInput, Modal, Portal, Button, Avatar  } from 'react-native-paper';
+import { Headline, Subheading, TextInput, Modal, Portal, Button, Avatar, Dialog, Paragraph, List  } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AddFriendProps, FriendForAdd } from '../types';
 import { addFriend } from '../api/FriendAPI';
@@ -86,6 +86,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
     TODO: Add small modal for success.
   */
   const handleAddFriend = async () => {
+    
     const friend: FriendForAdd = {
       firstName: firstName,
       lastName: lastName,
@@ -94,12 +95,103 @@ function AddFriend({navigation, route}: AddFriendProps) {
       profilePictureUrl: image
     };
 
-    console.log(friend);
+    if (firstName.length === 0) {
+      showDialog();
+      return;
+    }
+    if (commPreferences.length === 0) {
+      showDialog();
+      return;
+    }
+
     
     const resp = await addFriend(1, friend, commPreferences);
     setAllFriends([...allFriends, resp]);
     navigation.navigate('Friend', {friend: resp});
+    
+  }
+  
+  const [dialogVisible, setDialogVisible] = React.useState(false);
+  const showDialog = () => setDialogVisible(true);
+  const hideDialog = () => setDialogVisible(false);
+  const [dialogMessage, setDialogMessage] = React.useState<string>('Please enter a first name!');
 
+  useEffect(() => {
+    if (firstName.length === 0) {
+      setDialogMessage('Please enter a first name!')
+    } else {
+      if (commPreferences.length === 0) {
+        setDialogMessage('Please enter at least one communication preference')
+      }
+    }
+    
+  }, [firstName, commPreferences])
+  
+  
+  const commPreferenceModal = () => {
+    return (
+      <Portal>
+      <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+          <View style={styles.commAdder}>
+          <Text style={{fontSize: 26, marginBottom: 10}}>Add Preference: </Text>
+          <View style={styles.meet}>
+            <Subheading style={{fontSize: 18, color: 'black'}}>I want to:</Subheading>
+            <Picker
+              selectedValue={selectedMode}
+              onValueChange={(value) => setSelectedMode(value)}
+              style={styles.modePicker}>
+              <Picker.Item label="Meet" value="Meet"/>    
+              <Picker.Item label="Write/Message"  value="Write"/>  
+              <Picker.Item label="Talk" value="Talk"/> 
+            </Picker>
+          </View>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+          <Subheading style={{fontSize: 18, color: 'black'}}>Every:</Subheading>
+          <TextInput
+            label=""
+            style={styles.amount}
+            value={amount}
+            onChangeText={text => setAmount(text)}
+            autoComplete={false}
+            keyboardType='numeric'
+            selectionColor='black'/>
+          <Picker
+            selectedValue={timeUnit}
+            onValueChange={(value) => setTimeUnit(value)}
+            style={styles.timeunit}>
+            <Picker.Item label="Days" value="Days"/>    
+            <Picker.Item label="Weeks"  value="Weeks"/>  
+            <Picker.Item label="Months" value="Months"/> 
+            <Picker.Item label="Years" value="Years"/> 
+          </Picker>
+        </View>
+          <View style={styles.bottomButtons}>
+            <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={addPreference}>
+              Add
+            </Button>
+            <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
+              Cancel
+            </Button>
+          </View> 
+      </Modal>
+    </Portal>
+    )
+  }
+
+  const warningDialog = () => {
+    return (
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+          <Dialog.Content>
+            <Paragraph>{dialogMessage}</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Ok</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    )
   }
 
   /* 
@@ -160,60 +252,21 @@ function AddFriend({navigation, route}: AddFriendProps) {
         <Button onPress={pickImage}>Pick an profile picture image</Button>
         {image && <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />}
       </View>
-        <Subheading style={{marginTop: 40, fontSize: 20}}>Communication Preferences:</Subheading>
+        <Subheading style={{marginTop: 40, fontSize: 20, fontFamily: 'Manrope_400Regular'}}>Communication Preferences:</Subheading>
         <Button icon="plus" mode="contained" color="#3EB489" style={{marginTop: 20}} onPress={showModal}>
           Add Communication Preference
         </Button>
-      <Portal>
-        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-            <View style={styles.commAdder}>
-            <Text style={{fontSize: 26, marginBottom: 10}}>Add Preference: </Text>
-            <View style={styles.meet}>
-              <Subheading style={{fontSize: 18, color: 'black'}}>I want to:</Subheading>
-              <Picker
-                selectedValue={selectedMode}
-                onValueChange={(value) => setSelectedMode(value)}
-                style={styles.modePicker}>
-                <Picker.Item label="Meet" value="Meet"/>    
-                <Picker.Item label="Write/Message"  value="Write"/>  
-                <Picker.Item label="Talk" value="Talk"/> 
-              </Picker>
+      {commPreferenceModal()}
+      <View style={{marginTop: 5}}>
+        {commPreferences.map((comm, index) => {
+          return (
+            <View style={{alignItems: 'center'}}>
+            <Text key={index} style={styles.commPref}>
+             +   {comm.mode} every {comm.amount} {comm.timeUnit}
+            </Text>
             </View>
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-            <Subheading style={{fontSize: 18, color: 'black'}}>Every:</Subheading>
-            <TextInput
-              label=""
-              style={styles.amount}
-              value={amount}
-              onChangeText={text => setAmount(text)}
-              autoComplete={false}
-              keyboardType='numeric'
-              selectionColor='black'/>
-            <Picker
-              selectedValue={timeUnit}
-              onValueChange={(value) => setTimeUnit(value)}
-              style={styles.timeunit}>
-              <Picker.Item label="Days" value="Days"/>    
-              <Picker.Item label="Weeks"  value="Weeks"/>  
-              <Picker.Item label="Months" value="Months"/> 
-              <Picker.Item label="Years" value="Years"/> 
-            </Picker>
-          </View>
-            <View style={styles.bottomButtons}>
-              <Button mode="contained" style={[styles.bottomButton, {marginRight: 20}]} onPress={addPreference}>
-                Add
-              </Button>
-              <Button mode="contained" style={styles.bottomButton} onPress={hideModal}>
-                Cancel
-              </Button>
-            </View> 
-        </Modal>
-      </Portal>
-
-
-      <View>
-        {commPreferences.map((comm, index) => <Text key={index}>{comm.mode} every {comm.amount} {comm.timeUnit}</Text>)}
+            )
+          })}
       </View>
 
 
@@ -225,7 +278,9 @@ function AddFriend({navigation, route}: AddFriendProps) {
           Back
         </Button>
       </View>
+      {warningDialog()}
     </ScrollView>
+
   )
 }
 
@@ -233,18 +288,22 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 20,
     fontSize: 28,
-    color: 'black'
+    color: 'black',
+    fontFamily: 'Manrope_400Regular'
   },
   firstName: {
     marginBottom: 20,
+    fontFamily: 'Manrope_400Regular'
   },
   birthday: {
     flexDirection: 'row',
     marginTop: 5,
-    color: 'black'
+    color: 'black',
+    fontFamily: 'Manrope_400Regular'
   },
   commAdder: {
     marginTop: 5,
+    fontFamily: 'Manrope_400Regular'
   },
   meet: {
     flexDirection: 'row',
@@ -252,13 +311,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
     alignItems: 'center',
+    fontFamily: 'Manrope_400Regular'
   },
   modePicker: {
     width: 180,
     height: 30,
     marginRight: 20,
     marginLeft: 20,
-    backgroundColor: 'rgba(0,0,0,0.05)'
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    fontFamily: 'Manrope_400Regular'
   },
   month: {
     width: '50%',
@@ -286,7 +347,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     marginTop: 40,
     width: '50%',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   bottomButtons: {
     bottom: 10,
@@ -300,6 +361,11 @@ const styles = StyleSheet.create({
   bottomButton: {
     width: 150,
     backgroundColor: '#1685EC',
+  },
+  commPref: {
+    fontFamily: 'Manrope_400Regular',
+    fontSize: 22,
+
   }
 })
 

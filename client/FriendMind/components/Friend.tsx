@@ -348,7 +348,6 @@ function Friend({navigation, route}: FriendProps) {
 
   const [dialogVisible, setDialogVisible] = React.useState(false);
   const showDialog = () => {
-    console.log('hello???')
     setDialogVisible(true);
   }
   const hideDialog = () => setDialogVisible(false);
@@ -377,7 +376,7 @@ function Friend({navigation, route}: FriendProps) {
       const newFriends = [...data.allFriends];
       newFriends.splice(newFriends.findIndex(fr => fr.id === fid), 1);
       data.setAllFriends(newFriends);  
-      navigation.goBack();
+      navigation.navigate('Friends');
     } catch (e) {
       console.log(e);
     }
@@ -400,7 +399,7 @@ function Friend({navigation, route}: FriendProps) {
       </View> 
     </TouchableOpacity>
     ) : 
-    <View style={[styles.card, {backgroundColor: '#1685EC'}]}>
+    <View key={index} style={[styles.card, {backgroundColor: '#1685EC'}]}>
       <Text style={styles.para}>You met on { new Date(ev.communication.date).toDateString() }</Text> 
       <Text style={styles.para}>You haven't added details yet</Text>
         <Button onPress={() => updateEvent(ev)}>Add Details</Button>
@@ -483,12 +482,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   }, 
   container: {
-
+    
   },
   title: { 
     marginTop: 15,
     fontSize: 60,
-    fontFamily: 'Roboto',
     fontWeight: '700',
   },
   image: {
@@ -537,11 +535,9 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '600',
     color: 'white',
-    fontFamily: 'Roboto'
   },
   para: {
     color: 'white',
-    fontFamily: 'Roboto',
     flexShrink: 1,
     marginTop: 10,
     fontSize: 18

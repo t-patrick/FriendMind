@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import React, {FC, useContext, useEffect, useState} from 'react'
 import { StyleSheet, Text, View, Button as NativeButton, Platform } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Button, Divider, Headline, Menu, Modal, Paragraph, Portal, TextInput } from 'react-native-paper'
+import { Avatar, Button, Divider, Headline, Menu, Modal, Paragraph, Portal, TextInput } from 'react-native-paper'
 import { postCommunication } from '../api/FriendAPI'
 import { FriendContext } from '../App'
 import { Friend, FriendProps, NavigationProps, ReminderProps, RootStackParamList } from '../types'
@@ -163,7 +163,7 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
               <Headline style={{textAlign: 'center'}}>Great!</Headline>
               {datePicker()}
               <View style={[styles.bottomButtonsOther]}>
-              <Button mode="contained" style={styles.bottomButtonOther} onPress={addEventHandle}>
+              <Button mode="contained" style={styles.bottomButtonOther} onPress={onlyAddCommunication}>
                 Add Communication 
               </Button>
               <Button mode="contained" style={styles.bottomButtonOther} onPress={hideModal}>
@@ -183,15 +183,21 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
         {conditionalDoneRender()}
         <View style={styles.card}>
           {formatMessage(
-              lastComm.lastCommunication.type,
-              lastComm.preference.mode, 
-              reminder.firstName)}
-          <Paragraph style={styles.para}>
-            The last time was: 
-          </Paragraph>
-            <Text style={{fontWeight: '700', fontSize: 20, color: 'white'}}>
-              {lastComm.lastCommunication.type === 'Added' ? ' Not since adding' : ' ' + formatDate()}
-              </Text> 
+            lastComm.lastCommunication.type,
+            lastComm.preference.mode, 
+            reminder.firstName)}
+            <View style={styles.inside}>
+              <Avatar.Image source={{uri: reminder.picture, width: 300, height: 300}}/>
+              <View>
+                <Paragraph style={styles.para}>
+                  The last time was: 
+                </Paragraph>
+                <Text style={{fontWeight: '700', fontSize: 20, color: 'white', fontFamily: 'Manrope_400Regular'}}>
+                  {lastComm.lastCommunication.type === 'Added' ? ' Not since adding' : ' ' + formatDate()}
+                  </Text> 
+              </View>
+            </View>
+           
         </View> 
       </TouchableOpacity>
     )
@@ -221,23 +227,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(62, 180, 137, 0.85)',
     borderRadius: 10,
     padding: 20,
-    paddingLeft: 40,
-    paddingRight: 40,
+    minWidth: '100%',
     alignItems: 'center',
     justifyContent: 'space-around',
+    fontFamily: 'Manrope_400Regular',
+  },
+  inside: {
+    marginTop: 10,
+    flexDirection: 'row',
+    width: '90%', 
+    justifyContent: 'space-around'
   },
   name: {
     fontSize: 30,
     fontWeight: '600',
     color: 'white',
-    fontFamily: 'Roboto'
+    fontFamily: 'Manrope_400Regular',
+    paddingTop: 5
   },
   para: {
     color: 'white',
-    fontFamily: 'Roboto',
+    fontFamily: 'Manrope_400Regular',
     flexShrink: 1,
     marginTop: 10,
-    fontSize: 18
+    fontSize: 18,
   },
   bottomButtons: {
     bottom: 10,

@@ -78,7 +78,8 @@ export type Reminder = {
   friendId: number,
   firstName: string,
   lastName: string,
-  lastComm: LastComm
+  lastComm: LastComm,
+  picture: string | undefined
 }
 export type LastComm = {
   preference: CommPreference, 

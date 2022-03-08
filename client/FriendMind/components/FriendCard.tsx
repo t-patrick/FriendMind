@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '600',
     color: 'white',
-    fontFamily: 'Roboto',
-    marginLeft: 50
+    marginLeft: 40,
+    fontFamily: 'Manrope_400Regular'
   },
   para: {
     color: 'white',

@@ -30,8 +30,8 @@ db.friend.belongsTo(db.user);
 /* 
   Friends have multiple categories and vice versa
 */
-db.category.belongsToMany(db.friend, { through: 'FriendCategories'});
-db.friend.belongsToMany(db.category, { through: 'FriendCategories'});
+// db.category.belongsToMany(db.friend, { through: 'FriendCategories', { onDelete: 'cascade' }});
+// db.friend.belongsToMany(db.category, { through: 'FriendCategories'});
 
 /* 
   Friend has many notes, notes only have one friend.
@@ -39,41 +39,42 @@ db.friend.belongsToMany(db.category, { through: 'FriendCategories'});
 */
 
 db.friendnote.belongsTo(db.friend);
-db.friend.hasMany(db.friendnote);
+db.friend.hasMany(db.friendnote, { onDelete: 'cascade' });
 
 /* 
   Communication
   Belongs to both user and friend.
 */
 
-db.user.hasMany(db.communication);
-db.friend.hasMany(db.communication);
-db.communication.belongsTo(db.user);
-db.communication.belongsTo(db.friend);
+db.user.hasMany(db.communication, { onDelete: 'cascade' });
+db.friend.hasMany(db.communication, { onDelete: 'cascade' });
+db.communication.belongsTo(db.user, { onDelete: 'cascade' });
+db.communication.belongsTo(db.friend, { onDelete: 'cascade' });
 
 
 
-db.commpreference.belongsTo(db.friend);
-db.friend.hasMany(db.commpreference); 
+db.commpreference.belongsTo(db.friend, { onDelete: 'cascade' });
+db.friend.hasMany(db.commpreference, { onDelete: 'cascade' }); 
 
 /* 
 Meeting associations
 has a communication, to find the date.
 has many meeting notes and images.
 */
-db.meeting.belongsTo(db.communication);
-db.communication.hasOne(db.meeting);
+db.meeting.belongsTo(db.communication, { onDelete: 'cascade' } );
+db.communication.hasOne(db.meeting, { onDelete: 'cascade' });
 
-db.meeting.hasMany(db.meetingnote);
-db.meetingnote.belongsTo(db.meeting);
+db.meeting.hasMany(db.meetingnote, { onDelete: 'cascade' });
+db.meetingnote.belongsTo(db.meeting, { onDelete: 'cascade' });
 
-db.meeting.hasMany(db.meetingimage);
-db.meetingimage.belongsTo(db.meeting); 
+db.meeting.hasMany(db.meetingimage, { onDelete: 'cascade' });
+db.meetingimage.belongsTo(db.meeting, { onDelete: 'cascade' }); 
 
 (async () => {
   try {
 
-    await sequelize.sync({});
+    // await sequelize.sync({force: true});
+    await sequelize.sync();
 
     // await db.user.create({
     //   email: 'email',

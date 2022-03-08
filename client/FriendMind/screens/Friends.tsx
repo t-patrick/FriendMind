@@ -145,12 +145,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginTop: 25, 
-    color: 'darkgrey'
+    color: 'darkgrey',
+    fontFamily: 'Manrope_400Regular'
   },
   sortButtons: {
     margin: 10,
     justifyContent: 'space-between',
-    height: 90
+    height: 90,
   },
   sortButton: {
     padding: 0,

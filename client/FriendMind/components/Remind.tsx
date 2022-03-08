@@ -70,7 +70,8 @@ function Remind() {
             friendId: friend.id,
             firstName: friend.firstName,
             lastName: friend.lastName,
-            lastComm: comm
+            lastComm: comm,
+            picture: friend.profilePictureUrl
           })
         })
       });
@@ -97,7 +98,7 @@ function Remind() {
 
 
     return reminders ? (
-      <ImageBackground source={splash} resizeMode="cover" style={styles.image}>
+    <ImageBackground source={splash} resizeMode="cover" style={styles.image}>
     <ScrollView style={styles.list}>
       <View style={{width: '100%', 
                     backgroundColor: 'transpar', 
@@ -106,7 +107,7 @@ function Remind() {
                     marginLeft: 'auto',
                     marginRight: 'auto',
                     alignItems: 'center'}}>
-        <Headline style={{color: 'white', fontSize: 28, marginBottom: 20}}>Upcoming Birthdays:</Headline>
+        <Headline style={{color: 'white', fontSize: 28, marginBottom: 20, fontFamily: 'Manrope_400Regular'}}>Upcoming Birthdays:</Headline>
         <View style={{width: '100%', alignItems: 'center'}}>
         {birthdays?.map((birthday, index) => <Text style={{color: 'white', 
                                                   fontSize: 18,
@@ -123,7 +124,7 @@ function Remind() {
         </View>
       </View>
       <View style={{alignItems: 'center'}}>
-        <Headline style={{color: 'white', fontSize: 28, marginBottom: 20}}>Reminders:</Headline>
+        <Headline style={{color: 'white', fontSize: 28, marginBottom: 20, fontFamily: 'Manrope_400Regular'}}>Reminders:</Headline>
         {reminders.map((reminder, index) => <ReminderCard key={index} reminder={reminder}/>)}
       </View>
     </ScrollView>

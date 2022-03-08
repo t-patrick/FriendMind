@@ -41,6 +41,17 @@ const addFriend = async (req, res) => {
     }
   }
 
+  const deleteFriend = async (req, res) => {
+    try {
+      const friend = await db.friend.findOne({where: {id: req.query.id}});
+      const resp = await friend.destroy();
+
+      res.status(200).send(JSON.stringify(resp));
+    } catch (error) {
+      res.status(500).send(error.toString())
+    }
+  }
+
   const addCommPreferences = async (friend, preferences) => {
     const prefs = [];
     try {
@@ -180,4 +191,4 @@ const _getFriends = async (userId) => {
   }
   }
 
-module.exports = {addFriend, addCommPreferences, getFriends, getFriend}
+module.exports = {addFriend, addCommPreferences, getFriends, getFriend, deleteFriend}
