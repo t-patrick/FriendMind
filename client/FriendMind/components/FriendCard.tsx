@@ -12,7 +12,7 @@ const FriendCard: FC<FriendCardProps> = (props) => {
 
     <TouchableOpacity onPress={() => goToFriend(friend.id)}> 
       <View style={styles.card}>
-        <Avatar.Image source={{uri: 'http://10.0.2.2:3000/image', width: 200, height: 300}}/>
+        <Avatar.Image source={{uri: friend.picture, width: 200, height: 300}}/>
         <Headline style={styles.name}>{friend.firstName} {friend.lastName}</Headline>
         {/* <Paragraph style={styles.para}><Text style={{fontWeight: '700'}}>Last Seen:</Text> {friend.lastSeen.toDateString()}</Paragraph> */}
       </View> 

@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
@@ -8,7 +7,6 @@ import { Friend as FriendType, Reminder } from '../types';
 import ReminderCard from './ReminderCard';
 import { DurationInputArg1, DurationInputArg2 } from 'moment';
 import { Headline } from 'react-native-paper';
-import Friend from './Friend';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const splash = require('../assets/images/friendsplash.jpg')
 
@@ -51,7 +49,6 @@ type Birthday = {
 
 function Remind() {
 
-  const navigation = useNavigation();
   const { allFriends } = useContext(FriendContext);
   const [reminders, setReminders] = useState<Array<Reminder>>()
   const [birthdays, setBirthdays] = useState<Array<Birthday>>()
@@ -111,7 +108,7 @@ function Remind() {
                     alignItems: 'center'}}>
         <Headline style={{color: 'white', fontSize: 28, marginBottom: 20}}>Upcoming Birthdays:</Headline>
         <View style={{width: '100%', alignItems: 'center'}}>
-        {birthdays?.map(birthday => <Text style={{color: 'white', 
+        {birthdays?.map((birthday, index) => <Text style={{color: 'white', 
                                                   fontSize: 18,
                                                   backgroundColor: 'rgba(22, 133, 236, 0.8)',
                                                   padding: 15,
@@ -120,14 +117,14 @@ function Remind() {
                                                   width: '100%',
                                                   textAlign: 'center',
                                                   marginBottom: 10
-                                                  }}>
+                                                  }} key={index}>
           {birthday.friend.firstName} {birthday.friend.lastName}: {birthday.date.toDateString()}
           </Text>)}
         </View>
       </View>
       <View style={{alignItems: 'center'}}>
         <Headline style={{color: 'white', fontSize: 28, marginBottom: 20}}>Reminders:</Headline>
-        {reminders.map(reminder => <ReminderCard key={reminder.friendId} reminder={reminder}/>)}
+        {reminders.map((reminder, index) => <ReminderCard key={index} reminder={reminder}/>)}
       </View>
     </ScrollView>
     </ImageBackground>

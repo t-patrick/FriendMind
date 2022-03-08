@@ -119,6 +119,7 @@ export type FriendForCard = {
   firstName: string,
   lastName: string;
   lastSeen: Date;
+  picture: string | undefined;
 }
 
 export interface Reminiscence extends FullEvent {

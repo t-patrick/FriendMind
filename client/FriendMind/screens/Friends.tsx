@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, FAB, Headline, Searchbar } from 'react-native-paper';
@@ -8,6 +7,7 @@ import { Friend, FriendContextValue, FriendForCard, FriendsProps } from '../type
 
 
 function Friends({navigation, route}: FriendsProps) {
+
 
   const context: FriendContextValue = useContext(FriendContext);
 
@@ -32,15 +32,13 @@ function Friends({navigation, route}: FriendsProps) {
         id: friend.id,
         firstName: friend.firstName,
         lastName: friend.lastName,
-        lastSeen: friend.lastComms[0].lastCommunication.date
+        lastSeen: friend.lastComms[0].lastCommunication.date,
+        picture: friend.profilePictureUrl
       }
     });
   };
 
   useEffect(() => {
-
-
-
     const cards = convertFriends(allFriends);
 
     setCurrentFriends(cards);
@@ -71,11 +69,12 @@ function Friends({navigation, route}: FriendsProps) {
 
     if (direction === 'ascend') {
       copy.sort((a,b) => {
-        return b.lastSeen > a.lastSeen ? 1 : -1
+        return b.lastSeen.getTime() - a.lastSeen.getTime();
       });
     } else if (direction === 'descend') {
+
       copy.sort((a,b) => {
-        return a.lastSeen > b.lastSeen ? 1 : -1
+        return a.lastSeen.getTime() - b.lastSeen.getTime();
       });
     }
     setCurrentFriends(copy);

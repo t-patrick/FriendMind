@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Platform,  } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { Avatar, Button, Headline, List, Modal, Paragraph, Portal, TextInput, RadioButton } from 'react-native-paper';
-import { addFriendNote, getEvents, getFriend, postCommunication, postEvent} from '../api/FriendAPI';
+import { StyleSheet, Text, View, Platform, TouchableOpacity  } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Avatar, Button, Headline, List, Modal, Paragraph, Portal, TextInput, RadioButton, Dialog } from 'react-native-paper';
+import { addFriendNote, deleteFriend, getEvents, getFriend, postCommunication, postEvent} from '../api/FriendAPI';
 import { FriendContext } from '../App';
 import { Communication, Friend as FriendType, FriendProps, FullEvent, LastComm } from '../types';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { EvilIcons } from '@expo/vector-icons';
 
 
 let count = 1; 
@@ -345,12 +346,47 @@ function Friend({navigation, route}: FriendProps) {
     showModal();
   }
 
+  const [dialogVisible, setDialogVisible] = React.useState(false);
+  const showDialog = () => {
+    console.log('hello???')
+    setDialogVisible(true);
+  }
+  const hideDialog = () => setDialogVisible(false);
 
 
-  const renderEvent = (ev: FullEvent) => {
+  const deleteDialog = () => {
+    return (
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+          <Dialog.Content>
+            <Paragraph>Are you sure?</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleDeleteFriend}>Delete</Button>
+            <Button onPress={hideDialog}>Cancel</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    )
+  }
+
+  const handleDeleteFriend = async () => {
+    try {
+      const fid = friendData?.id as number;
+      await deleteFriend(fid);
+      const newFriends = [...data.allFriends];
+      newFriends.splice(newFriends.findIndex(fr => fr.id === fid), 1);
+      data.setAllFriends(newFriends);  
+      navigation.goBack();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  const renderEvent = (ev: FullEvent, index: number) => {
 
     return ev.event ? (
-    <TouchableOpacity>
+    <TouchableOpacity key={index}>
       <View style={styles.card}>
         <Paragraph style={styles.para}>
           You saw {friendData?.firstName} on {new Date(ev.communication.date).toDateString()}
@@ -381,8 +417,8 @@ function Friend({navigation, route}: FriendProps) {
           <Avatar.Image source={{uri: friendData.profilePictureUrl || 'http://10.0.2.2:3000/image'}} size={160} style={styles.image}/>
           <Text style={styles.title}>{friendData.firstName} {friendData.lastName}</Text>
           <View style={styles.lastComms}>
-            {friendData.lastComms.map(comm => 
-              <Text style={{color: 'white'}}>
+            {friendData.lastComms.map((comm, index) => 
+              <Text key={index} style={{color: 'white'}}>
                 Last {comm.preference.mode}: <Text style={{color: 'white', fontWeight: 'bold'}}>{
                 comm.lastCommunication.type === 'Added' ? 'Not Since Adding' : new Date(comm.lastCommunication.date).toDateString()
                 }</Text>
@@ -394,9 +430,9 @@ function Friend({navigation, route}: FriendProps) {
               title="Don't forget:"
               >
               <Text style={{width: 300, backgroundColor: getColor(), padding: 10, fontSize: 18}}>Birthday: {dayWithOrdinal(friendData.birthDay)} {friendData.birthMonth}</Text>
-              {friendData.notes?.map(note => { 
+              {friendData.notes?.map((note, index) => { 
                 return (
-                  <Text style={{width: 300, backgroundColor: getColor(), padding: 10, fontSize: 18}}>{note.text}</Text>
+                  <Text key={index} style={{width: 300, backgroundColor: getColor(), padding: 10, fontSize: 18}}>{note.text}</Text>
                   )
                 })}
                 <Text style={{width: 300, backgroundColor: getColor(), padding: 10, fontSize: 18}}>
@@ -414,8 +450,20 @@ function Friend({navigation, route}: FriendProps) {
           <Headline style={{marginLeft: 'auto', marginRight: 'auto', fontSize: 30, marginTop: 10, }}>Past Meets:</Headline>
         <View>
           <View style={{marginLeft: 'auto', marginRight: 'auto', marginTop: 30, width: '80%'}}>
-            {events && (events.filter(ev => ev.communication.type === 'Meet').map(ev => renderEvent(ev)))}
+            {events && (events.filter(ev => ev.communication.type === 'Meet').map((ev, index) => renderEvent(ev, index)))}
           </View>
+        </View>
+        <View style={{marginLeft: 'auto', marginRight: 'auto', marginBottom: 30}}>
+          {deleteDialog()}
+          <TouchableOpacity style={{backgroundColor: 'red',
+                                      height: 40, 
+                                      width: 200,
+                                      borderRadius: 10,
+                                      alignItems: 'center'
+                                      }}
+                                      onPress={showDialog}>
+            <Headline style={{color: 'white'}}>Delete Friend</Headline>
+          </TouchableOpacity>
         </View>
       </ScrollView> 
     )

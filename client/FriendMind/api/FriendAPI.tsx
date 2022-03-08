@@ -73,6 +73,12 @@ export const getReminsce = (userId: number) => {
   return fetch(`${baseUrl}/reminisce?id=${userId}`).then(resp => resp.json())
 }
 
+export const deleteFriend = (friendId: number) => {
+  return fetch(`${baseUrl}/friend?id=${friendId}`, {
+    method: 'DELETE'
+  }).then(resp => resp.json());
+}
+
 
 
 

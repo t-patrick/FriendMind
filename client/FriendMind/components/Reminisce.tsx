@@ -54,9 +54,9 @@ function Reminisce() {
       <ScrollView>
       <View style={{ flex: 1, alignItems: 'center' }}>
       <Headline style={{color: 'white', fontSize: 34, marginBottom: 20, marginTop: 50, height: 40}}>Reminisce</Headline>
-        {events.map(event => {
+        {events.map((event, index)  => {
           return (
-            <TouchableOpacity>
+            <TouchableOpacity key={index}>
             <View style={styles.card}>
               <Paragraph style={styles.para}>
                 {getDateDiff(new Date(event.communication.date))} ago:  

@@ -213,7 +213,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
 
 
       <View>
-        {commPreferences.map(comm => <Text key={comm.mode + comm.amount}>{comm.mode} every {comm.amount} {comm.timeUnit}</Text>)}
+        {commPreferences.map((comm, index) => <Text key={index}>{comm.mode} every {comm.amount} {comm.timeUnit}</Text>)}
       </View>
 
 
