@@ -35,6 +35,11 @@ export const  addFriend = async (userId: number, friend: FriendForAdd, preferenc
   }).then(resp => resp.json());
 }
 
+export const getFriend = async (friendId: number) => { 
+  return fetch(`${baseUrl}/friend?friendId=${friendId}`)
+  .then(friends => friends.json())
+}
+
 export const addFriendNote = (id: number, note: Note) => {
   return fetch(`${baseUrl}/friendnote?id=${id}`, {
     method: 'POST',
@@ -46,7 +51,7 @@ export const addFriendNote = (id: number, note: Note) => {
 }
 
 export const postCommunication = (friendId: number, communication: Communication) => {
-  return fetch(`${baseUrl}/communication?id=${friendId}`, {
+  return fetch(`${baseUrl}/communication?id=${1}&friendId=${friendId}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -62,6 +67,10 @@ export const postEvent = (commId: number, event: MeetEvent) => {
     },
     body: JSON.stringify(event)
   }).then(resp => resp.json());
+}
+
+export const getReminsce = (userId: number) => {
+  return fetch(`${baseUrl}/reminisce?id=${userId}`).then(resp => resp.json())
 }
 
 

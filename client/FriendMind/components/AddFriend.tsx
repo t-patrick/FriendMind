@@ -176,7 +176,7 @@ function AddFriend({navigation, route}: AddFriendProps) {
                 style={styles.modePicker}>
                 <Picker.Item label="Meet" value="Meet"/>    
                 <Picker.Item label="Write/Message"  value="Write"/>  
-                <Picker.Item label="Speak" value="Talk"/> 
+                <Picker.Item label="Talk" value="Talk"/> 
               </Picker>
             </View>
           </View>

@@ -105,7 +105,7 @@ export type MeetEvent = {
 }
 export type FullEvent = {
   communication: Communication,
-  event: MeetEvent
+  event: MeetEvent | null;
 }
 
 export type CommPreference = {
@@ -121,6 +121,9 @@ export type FriendForCard = {
   lastSeen: Date;
 }
 
+export interface Reminiscence extends FullEvent {
+  friend: Friend
+}
 
 export type FriendContextValue = {
   allFriends: Array<Friend>,

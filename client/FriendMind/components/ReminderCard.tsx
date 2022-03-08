@@ -18,6 +18,7 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
 
   const { allFriends } = useContext(FriendContext);
 
+  const [cardVisible, setCardVisible] = useState<boolean>(true);
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -79,6 +80,8 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
       type: reminder.lastComm.preference.mode,
     });
 
+    setCardVisible(false);
+
     hideModal();
     navigation.navigate('AddEvent', {friendId: reminder.friendId, communication: comm});
   }
@@ -90,12 +93,9 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
       type: reminder.lastComm.preference.mode,
     });
 
+    setCardVisible(false);
     hideModal();
   }
-
-  useEffect(() => {
-    console.log(reminder);
-  }, []);
 
   const [modalVisible, setModalVisible] = useState(false);
   const showModal = () => setModalVisible(true);
@@ -187,17 +187,17 @@ const ReminderCard: FC<ReminderProps> = ({reminder}) => {
               lastComm.preference.mode, 
               reminder.firstName)}
           <Paragraph style={styles.para}>
-            The last time was 
-            <Text style={{fontWeight: '700', fontSize: 20}}>
-              {lastComm.lastCommunication.type === 'Added' ? ' Not since adding' : formatDate()}
-              </Text> 
+            The last time was: 
           </Paragraph>
+            <Text style={{fontWeight: '700', fontSize: 20, color: 'white'}}>
+              {lastComm.lastCommunication.type === 'Added' ? ' Not since adding' : ' ' + formatDate()}
+              </Text> 
         </View> 
       </TouchableOpacity>
     )
   }
  
-  return reminder ? (
+  return reminder && cardVisible ? (
     <View>
     <Menu
         visible={visible}
@@ -218,12 +218,13 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 40,
     width: '100%',
-    backgroundColor: 'rgba(62, 180, 137, 0.8)',
+    backgroundColor: 'rgba(62, 180, 137, 0.85)',
     borderRadius: 10,
     padding: 20,
+    paddingLeft: 40,
+    paddingRight: 40,
     alignItems: 'center',
     justifyContent: 'space-around',
-    elevation: 1
   },
   name: {
     fontSize: 30,
@@ -284,7 +285,7 @@ const formatMessage = (lastCommType: string, preferredMode: string, firstName: s
         <Text>{firstName}</Text>
       </Headline>
       )
-  case 'Speak': 
+  case 'Talk': 
     return <Headline style={styles.name}>Give {firstName} a call!</Headline>
   }
 }

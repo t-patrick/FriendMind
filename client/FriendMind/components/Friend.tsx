@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Platform,  } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { Avatar, Button, Headline, List, Modal, Paragraph, Portal, TextInput, RadioButton } from 'react-native-paper';
-import { addFriendNote, getEvents, postCommunication, postEvent} from '../api/FriendAPI';
+import { addFriendNote, getEvents, getFriend, postCommunication, postEvent} from '../api/FriendAPI';
 import { FriendContext } from '../App';
-import { Communication, Friend as FriendType, FriendProps, FullEvent } from '../types';
+import { Communication, Friend as FriendType, FriendProps, FullEvent, LastComm } from '../types';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
@@ -39,9 +39,7 @@ function Friend({navigation, route}: FriendProps) {
 
   const updateEvents = async () => {
     const evs = await getEvents(route.params.friend.id);
-    console.log('====================================');
-    console.log(evs);
-    console.log('====================================');
+    evs.sort((a,b) => new Date(b.communication.date).getTime() - new Date(a.communication.date).getTime());
     setEvents(evs);
   };
   
@@ -57,7 +55,6 @@ function Friend({navigation, route}: FriendProps) {
   }
 
   const handleAddNote = async () => {
-    console.log(noteValue);
     // Make API call, post note
     // Update state, adding the returned note.
 
@@ -80,37 +77,83 @@ function Friend({navigation, route}: FriendProps) {
     return n + (s[(v - 20) % 10] || s[v] || s[0]);
   }
 
+  const updateFriends = async () => {
+    const friend: FriendType = await getFriend(friendData?.id as number);
+    const friendsCopy = [...data.allFriends];
+    const index = friendsCopy.findIndex(friend => friend.id === friendData?.id);
+    friendsCopy[index] = friend;
+    data.setAllFriends(friendsCopy)
+  }
+
+  const updateRenderEvents = (ev: FullEvent) => {
+    const newEvents = [...events, ev];
+    newEvents.sort((a,b) => new Date(a.communication.date).getTime() - new Date(b.communication.date).getTime());
+    setEvents(newEvents);
+  }
 
   const addCommunication = async () => {
-    const comm = await postCommunication(friendData?.id as number, {
-      date: date,
-      type: commValue,
-    });
 
-    const newEvent: FullEvent = comm;
+    const comm = await postComm();
 
-    const newEvents = [...events, newEvent];
-    newEvents.sort((a,b) => new Date(a.communication.date).getTime() - new Date(b.communication.date).getTime());
+    comm.type === 'Meet' && updateRenderEvents({communication: comm, event: null});
 
-    setEvents(newEvents);
-
+    updateFriends();
     hideModal();
     // Need to trigger a refetch. Or fetch one friend as update state.
   }
 
-  const addEvent = async () => {
+  const postComm = async (isMeet?: boolean): Promise<Communication> => {
     const comm = await postCommunication(friendData?.id as number, {
       date: date,
-      type: commValue,
+      type: isMeet ? 'Meet' : commValue,
     });
 
-    const event = await postEvent(comm.id, {
+    return comm;
+  }
+
+  const addEvent = async () => {
+
+    setCommValue('Meet'); 
+
+    const comm = await postComm(true);
+    const id = comm.id as number;
+
+    console.log(comm);
+    const event = await postEvent(id, {
       location: location, 
       title: title
     });
 
+    updateRenderEvents({communication: comm, event: event});
+    const lastComms = friendData?.lastComms as LastComm[];
+    const index = lastComms.findIndex(c => c.preference.mode === comm.type) as number;
+
+    console.log(lastComms);
+
+    if (lastComms[index].lastCommunication.date < comm.date) {
+      const newFriendData: FriendType = {} as FriendType;
+      Object.assign(newFriendData, friendData);
+      newFriendData.lastComms[index].lastCommunication = comm; 
+      setFriendData(newFriendData);
+    }
+
+    updateLastComms(comm);
+
+
+    updateFriends();
     hideModal();
-    updateEvents();
+  }
+
+  const updateLastComms = (comm: Communication) => {
+    const lastComms = friendData?.lastComms as LastComm[];
+    const index = friendData?.lastComms.findIndex(c => c.preference.mode === comm.type) as number;
+
+    if (lastComms[index].lastCommunication.date < comm.date) {
+      const newFriendData: FriendType = {} as FriendType;
+      Object.assign(newFriendData, friendData);
+      newFriendData.lastComms[index].lastCommunication = comm; 
+      setFriendData(newFriendData);
+    }
   }
 
   const postUpdateEvent = async () => {
@@ -231,12 +274,12 @@ function Friend({navigation, route}: FriendProps) {
               <Text>Meet</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
-              <RadioButton value="Speak" />
-              <Text>Speak</Text>
+              <RadioButton value="Talk" />
+              <Text>Talk</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
-              <RadioButton value="Event" />
-              <Text>Event</Text>
+              <RadioButton value="Write" />
+              <Text>Write</Text>
             </View>
           </View>
           </RadioButton.Group>
@@ -257,7 +300,7 @@ function Friend({navigation, route}: FriendProps) {
       return (
         <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
         <Headline>Add Event</Headline>
-        {currentModal === 'updateEvent' ? renderDatePicker(currentEvent) : renderDatePicker}
+        {currentModal === 'updateEvent' ? renderDatePicker(currentEvent) : renderDatePicker()}
         <TextInput
           label="Title"
           autoComplete={false}
@@ -305,9 +348,7 @@ function Friend({navigation, route}: FriendProps) {
 
 
   const renderEvent = (ev: FullEvent) => {
-    
-    console.log(ev);
-    
+
     return ev.event ? (
     <TouchableOpacity>
       <View style={styles.card}>
@@ -342,7 +383,9 @@ function Friend({navigation, route}: FriendProps) {
           <View style={styles.lastComms}>
             {friendData.lastComms.map(comm => 
               <Text style={{color: 'white'}}>
-                Last {comm.preference.mode}: <Text style={{color: 'white', fontWeight: 'bold'}}>{new Date(comm.lastCommunication.date).toDateString()}</Text>
+                Last {comm.preference.mode}: <Text style={{color: 'white', fontWeight: 'bold'}}>{
+                comm.lastCommunication.type === 'Added' ? 'Not Since Adding' : new Date(comm.lastCommunication.date).toDateString()
+                }</Text>
               </Text>
             )}
           </View>
@@ -357,7 +400,7 @@ function Friend({navigation, route}: FriendProps) {
                   )
                 })}
                 <Text style={{width: 300, backgroundColor: getColor(), padding: 10, fontSize: 18}}>
-                <Button icon="plus" onPress={() => setCurrentModal('note')}>
+                <Button icon="plus" onPress={() => setModal('note')}>
                   New
                 </Button>
                 </Text>
@@ -371,7 +414,7 @@ function Friend({navigation, route}: FriendProps) {
           <Headline style={{marginLeft: 'auto', marginRight: 'auto', fontSize: 30, marginTop: 10, }}>Past Meets:</Headline>
         <View>
           <View style={{marginLeft: 'auto', marginRight: 'auto', marginTop: 30, width: '80%'}}>
-            {events && (events.map(ev => renderEvent(ev)))}
+            {events && (events.filter(ev => ev.communication.type === 'Meet').map(ev => renderEvent(ev)))}
           </View>
         </View>
       </ScrollView> 

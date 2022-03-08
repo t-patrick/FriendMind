@@ -9,9 +9,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const test = require('./model/testingfile');
-const { addFriend, addCommPreferences, getFriends } = require('./model/FriendController');
+const { addFriend, addCommPreferences, getFriends, getFriend } = require('./model/FriendController');
 const { addFriendNote, getFriendNotes } = require('./model/FriendNoteController');
-const { addCommunication, getCommunication, postMeeting, getMeetings } = require('./model/CommsController');
+const { addCommunication, getCommunication, postMeeting, getMeetings, populateReminisce } = require('./model/CommsController');
 
 router.get('/image', async (req, res) => {
   // const friend = await test.getFriend(req.query.id);
@@ -25,6 +25,7 @@ router.get('/hello', async (req,res) => {
 })
 
 router.post('/friend', addFriend);
+router.get('/friend', getFriend)
 
 router.get('/friends', getFriends);
 
@@ -36,6 +37,8 @@ router.get('/communication', getCommunication);
 
 router.post('/meeting', postMeeting)
 router.get('/meetings', getMeetings)
+
+router.get('/reminisce', populateReminisce)
 
 
 router.post('/sendimage', upload.single('image'), (req, res) => {

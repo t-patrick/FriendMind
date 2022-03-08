@@ -22,7 +22,7 @@ db.communication = require("./communication.js")(sequelize, Sequelize.DataTypes)
 db.commpreference = require('./communcationpreference.js')(sequelize, Sequelize.DataTypes);
 
 /* 
-  User has many friends, friends only have one user, this isn't facebook after all.
+  User has many friends, friends only have one user
 */
 db.user.hasMany(db.friend);
 db.friend.belongsTo(db.user);

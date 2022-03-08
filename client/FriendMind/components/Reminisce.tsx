@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Image, ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
-import { Avatar } from 'react-native-paper';
+import { Avatar, Headline, Paragraph } from 'react-native-paper';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const imga = require('../assets/images/reminisce-splash.jpg')
 import * as ImagePicker from 'expo-image-picker';
+import { getReminsce } from '../api/FriendAPI';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { FullEvent, Reminiscence } from '../types';
+import moment from 'moment';
 
 /* 
   Will be: A selection of previous meetings with friends. 
@@ -13,47 +17,119 @@ import * as ImagePicker from 'expo-image-picker';
 */
 
 function Reminisce() {
-  const [image, setImage] = useState<any>(null);
 
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  const [events, setEvents] = useState<Array<Reminiscence>>([]);
 
-    console.log(result);
+  useEffect(() => {
+    fetchEvents()
+  
+  }, [])
+  
+  const fetchEvents =  async () => {
+    const events = await getReminsce(1);
+    console.log(events);
+    
+    setEvents(events);
+  }
 
-    if (!result.cancelled) {
-      setImage(result.uri);
+  const getDateDiff = (date: Date) => {
+    const d = moment(date);
+    let diff = d.diff(new Date(), 'days');
+
+    if (diff > 365) {
+      return Math.floor(diff / 365);
     }
-  };
+
+
+    if (diff > 6) {
+      diff = Math.floor(diff / 7); 
+      if (diff > 4) return Math.floor(diff / 4) + ' months'
+      return diff + ' weeks'
+    }
+    return Math.abs(diff) + ' days';
+  }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button title="Pick an image from camera roll" onPress={pickImage} />
-      {image && <Avatar.Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-    </View>
+    <ImageBackground source={imga} resizeMode="cover" style={styles.image}>
+      <ScrollView>
+      <View style={{ flex: 1, alignItems: 'center' }}>
+      <Headline style={{color: 'white', fontSize: 34, marginBottom: 20, marginTop: 50, height: 40}}>Reminisce</Headline>
+        {events.map(event => {
+          return (
+            <TouchableOpacity>
+            <View style={styles.card}>
+              <Paragraph style={styles.para}>
+                {getDateDiff(new Date(event.communication.date))} ago:  
+              </Paragraph>
+                <Text style={{fontWeight: '700', fontSize: 20, color: 'white', marginTop: 10}}>
+                  "{event.event?.title}"
+                  </Text> 
+                <Text style={{fontWeight: '700', fontSize: 20, color: 'white', marginTop: 10}}>
+                  with {event.friend.firstName}
+                  </Text> 
+            </View> 
+          </TouchableOpacity>
+          )  
+        })}
+      </View>
+      </ScrollView>
+    </ImageBackground>
   );
 
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  card: {
+    marginBottom: 40,
+    width: '100%',
+    backgroundColor: 'rgba(62, 180, 137, 0.85)',
+    borderRadius: 10,
+    padding: 20,
+    paddingLeft: 40,
+    paddingRight: 40,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  name: {
+    fontSize: 30,
+    fontWeight: '600',
+    color: 'white',
+    fontFamily: 'Roboto'
   },
   image: {
     flex: 1,
     justifyContent: "center"
   },
-  text: {
-    color: "white",
-    fontSize: 42,
-    lineHeight: 84,
-    fontWeight: "bold",
-    textAlign: "center",
+  para: {
+    color: 'white',
+    fontFamily: 'Roboto',
+    flexShrink: 1,
+    marginTop: 10,
+    fontSize: 18
+  },
+  bottomButtons: {
+    bottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 40,
+  },
+  bottomButtonsOther: {
+    bottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 30,
+  },
+  bottomButton: {
+    width: 150,
+    backgroundColor: '#1685EC',
+  },
+  bottomButtonOther: {
+    backgroundColor: '#1685EC',
+    height: 40
   }
 });
 
