@@ -17,23 +17,26 @@ function Reminisce() {
 
   const fetchEvents = async () => {
     const events = await getReminsce(1);
-    console.log(events);
-
     setEvents(events);
   };
 
   const getDateDiff = (date: Date) => {
     const d = moment(date);
-    let diff = d.diff(new Date(), "days");
+    const diff = Math.abs(d.diff(new Date(), "days"));
 
-    if (diff > 365) {
-      return Math.floor(diff / 365);
+    if (diff >= 365) {
+      const years = Math.floor(diff / 365);
+      return "" + years + (years === 1 ? " year" : " years");
+    }
+
+    if (diff > 30) {
+      const months = Math.floor(diff / 30);
+      return "" + months + (months === 1 ? " month" : " months");
     }
 
     if (diff > 6) {
-      diff = Math.floor(diff / 7);
-      if (diff > 4) return Math.floor(diff / 4) + " months";
-      return diff + " weeks";
+      const weeks = Math.floor(diff / 7);
+      return "" + weeks + (weeks === 1 ? " week" : " weeks");
     }
     return Math.abs(diff) + " days";
   };

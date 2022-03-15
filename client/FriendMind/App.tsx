@@ -3,7 +3,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import useCachedResources from "./hooks/useCachedResources";
 import Navigation from "./navigation";
 import { Provider as PaperProvider } from "react-native-paper";
-import { LogBox, Text, View } from "react-native";
+import { LogBox, View } from "react-native";
 import { createContext, useEffect, useState } from "react";
 import { getFriends } from "./api/FriendAPI";
 import { Friend, FriendContextValue } from "./types";

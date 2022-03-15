@@ -14,7 +14,6 @@ let model = db.meeting;
       }
     } 
     
-    
 */
 
 const db = require('.');

@@ -1,18 +1,4 @@
 const multer = require('multer');
-// const config = multer({
-//   storage: multer.diskStorage({
-//     destination: function (req, file, cb) {
-//       cb(null, 'imagestore');
-//     },
-//     filename: function (req, file, cb) {
-//       cb(null, file.originalname);
-//     }
-//   }),
-//   limits: {
-//     fileSize: 50000000
-//   }
-// });
-
 
 const storage = multer.diskStorage({
     destination(req, file, callback) {
@@ -25,3 +11,4 @@ const storage = multer.diskStorage({
 
   conf = multer({storage});
 module.exports = conf;
+

@@ -39,7 +39,7 @@ function Login() {
           <Logo />
           <Headline style={styles.title}>Login</Headline>
           <TextInput
-            label="Username"
+            label="Email"
             autoComplete={false}
             style={styles.input}
             onChangeText={(val) => setEmail(val)}

@@ -503,7 +503,9 @@ function Friend({ navigation, route }: FriendProps) {
             {new Date(ev.communication.date).toDateString()}
           </Paragraph>
           <Text style={styles.name}>"{ev.event.title}"</Text>
-          <Paragraph style={styles.para}>at {ev.event.location}</Paragraph>
+          <Paragraph style={styles.para}>
+            Location: {ev.event.location}
+          </Paragraph>
         </View>
       </TouchableOpacity>
     ) : (
