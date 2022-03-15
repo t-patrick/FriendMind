@@ -7,10 +7,8 @@ import {
   Modal,
   Portal,
   Button,
-  Avatar,
   Dialog,
   Paragraph,
-  List,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { AddFriendProps, FriendForAdd } from "../types";
@@ -19,7 +17,7 @@ import { FriendContext } from "../App";
 import * as ImagePicker from "expo-image-picker";
 import { ScrollView } from "react-native-gesture-handler";
 
-function AddFriend({ navigation, route }: AddFriendProps) {
+function AddFriend({ navigation }: AddFriendProps) {
   const { allFriends, setAllFriends } = useContext(FriendContext);
 
   const [firstName, setFirstName] = useState("");
@@ -91,10 +89,6 @@ function AddFriend({ navigation, route }: AddFriendProps) {
     hideModal();
   };
 
-  /* 
-    TODO: API call to add Friend
-    TODO: Add small modal for success.
-  */
   const handleAddFriend = async () => {
     const friend: FriendForAdd = {
       firstName: firstName,
@@ -242,9 +236,6 @@ function AddFriend({ navigation, route }: AddFriendProps) {
     );
   };
 
-  /* 
-    TODO: Separate out into smaller components
-  */
   return (
     <ScrollView style={{ flex: 1, padding: 30 }}>
       <Headline style={styles.header}>Add Friend</Headline>
@@ -468,14 +459,6 @@ type CommPreference = {
   mode: "Write" | "Talk" | "Meet";
   timeUnit: "Days" | "Weeks" | "Months" | "Years";
   amount: number;
-};
-
-type Friend = {
-  firstName: string;
-  lastName: string;
-  birthDay: number;
-  birthMonth: string;
-  commPreferences: Array<CommPreference>;
 };
 
 export default AddFriend;

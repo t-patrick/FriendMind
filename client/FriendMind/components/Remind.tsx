@@ -10,36 +10,6 @@ import { Headline } from "react-native-paper";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const splash = require("../assets/images/friendsplash.jpg");
 
-// const mockReminders: Array<Reminder> =
-// [
-//   {
-//     friendId: 1,
-//     firstName: 'John',
-//     lastName: 'Smith',
-//     lastComm: {
-//       preference: {
-//         mode: 'Write',
-//         timeUnit: 'Weeks',
-//         amount: 2
-//       },
-//       lastCommunication: new Date('4/4/2020')
-//     }
-//   },
-//   {
-//     friendId: 2,
-//     firstName: 'Beth',
-//     lastName: 'Lee',
-//     lastComm: {
-//       preference: {
-//         mode: 'Talk',
-//         timeUnit: 'Months',
-//         amount: 3
-//       },
-//       lastCommunication: new Date('10/4/2020')
-//     }
-//   },
-// ]
-
 type Birthday = {
   friend: FriendType;
   date: Date;
@@ -190,19 +160,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-
-/* 
-  API
-  Needs to get preferences for each friend
-  For Each preference, get last communication from Communications table, or default to time they were added.
-  - Need to add this to the friend table.
-  
-  function testFetch () {
-    console.log('In test fetch')
-    fetch('http://10.0.2.2:3000/hello').then(res => res.json()).then(obj => {
-      console.log('got the response', obj);
-    }).catch(e => console.log(e));
-  }
-*/
 
 export default Remind;

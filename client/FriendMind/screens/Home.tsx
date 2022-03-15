@@ -6,10 +6,6 @@ import Reminisce from "../components/Reminisce";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-/* TODO
-  Add custom content components for Remind and Reminise buttons
-*/
-
 function Home() {
   const BottomTab = createMaterialBottomTabNavigator<HomeTabParamList>();
 

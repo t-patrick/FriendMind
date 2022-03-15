@@ -1,13 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { FC, useContext, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button as NativeButton,
-  Platform,
-} from "react-native";
+import { StyleSheet, Text, View, Platform } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import {
   Avatar,
@@ -22,13 +15,7 @@ import {
 } from "react-native-paper";
 import { postCommunication } from "../api/FriendAPI";
 import { FriendContext } from "../App";
-import {
-  Friend,
-  FriendProps,
-  NavigationProps,
-  ReminderProps,
-  RootStackParamList,
-} from "../types";
+import { Friend, NavigationProps, ReminderProps } from "../types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const ReminderCard: FC<ReminderProps> = ({ reminder }) => {
@@ -86,8 +73,6 @@ const ReminderCard: FC<ReminderProps> = ({ reminder }) => {
   };
 
   const onDone = () => {
-    // Add communication to database.
-    // Need to get the id back.
     closeMenu();
     setModalVisible(true);
   };
@@ -337,10 +322,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/* 
-  Make reminder message pretty
-  TODO add variations to messages, maybe depending on how long it has been. 
-*/
 const formatMessage = (
   lastCommType: string,
   preferredMode: string,

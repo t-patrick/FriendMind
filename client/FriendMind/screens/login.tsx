@@ -1,18 +1,14 @@
-import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useState } from "react";
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { Button, Headline, TextInput } from "react-native-paper";
+import { Headline, TextInput } from "react-native-paper";
 import { UserContext } from "../navigation";
 import { navigate } from "../navigation/RootNavigation";
-import { NavigationProps } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const splash = require("../assets/images/friendsplash.jpg");
 
 function Login() {
-  // const navigation = useNavigation<NavigationProps>();
-
   const { setIsLoggedIn } = useContext(UserContext);
 
   const [email, setEmail] = useState("");

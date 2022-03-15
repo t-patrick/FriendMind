@@ -24,7 +24,6 @@ function AddEvent({ navigation, route }: AddEventProps) {
 
   return (
     <View style={{ flex: 1, padding: 30 }}>
-      {/* <Text style={styles.header}>Add Friend</Text> */}
       <Headline style={styles.header}>Add Event</Headline>
       <TextInput
         label="Title"

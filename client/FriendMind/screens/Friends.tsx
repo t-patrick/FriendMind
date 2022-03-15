@@ -14,18 +14,12 @@ function Friends({ navigation, route }: FriendsProps) {
   const context: FriendContextValue = useContext(FriendContext);
   const { allFriends } = context;
 
-  /*///////////////////
-    STATE
-  */ ///////////////////
-
   const [query, setQuery] = useState<string>("");
-
   const [buttonOneSelected, setButtonOneSelected] = useState(true);
   const [buttonTwoSelected, setButtonTwoSelected] = useState(false);
   const [currentFriends, setCurrentFriends] = useState<Array<FriendForCard>>(
     []
   );
-
   const [selectedCommType, setSelectedCommType] = useState("meet");
 
   const convertFriends = (allFriends: Array<Friend>) => {
@@ -46,9 +40,6 @@ function Friends({ navigation, route }: FriendsProps) {
     setCurrentFriends(cards);
   }, [allFriends]);
 
-  /*///////////////////
-    HANDLERS
-  */ ///////////////////
   const onChangeSearch = (query: string) => {
     setQuery(query);
     if (query === "") setCurrentFriends(convertFriends(allFriends));
@@ -62,7 +53,6 @@ function Friends({ navigation, route }: FriendsProps) {
     setCurrentFriends(convertFriends(filtered));
   };
 
-  // TODO: Add more sorting options.
   const sortFriends = (direction: string) => {
     const copy = [...currentFriends];
 
@@ -92,10 +82,6 @@ function Friends({ navigation, route }: FriendsProps) {
       button === "last" ? sortFriends("ascend") : sortFriends("descend");
     }
   };
-
-  /*///////////////////
-    NAVIGATION
-  */ ///////////////////
 
   const addFriend = () => {
     navigation.navigate("AddFriend");

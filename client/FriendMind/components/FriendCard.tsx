@@ -16,7 +16,6 @@ const FriendCard: FC<FriendCardProps> = (props) => {
         <Headline style={styles.name}>
           {friend.firstName} {friend.lastName}
         </Headline>
-        {/* <Paragraph style={styles.para}><Text style={{fontWeight: '700'}}>Last Seen:</Text> {friend.lastSeen.toDateString()}</Paragraph> */}
       </View>
     </TouchableOpacity>
   );

@@ -36,7 +36,6 @@ import {
   LastComm,
 } from "../types";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { EvilIcons } from "@expo/vector-icons";
 
 let count = 1;
 
@@ -182,9 +181,7 @@ function Friend({ navigation, route }: FriendProps) {
       updateLastComms(comm);
       updateFriends();
     } catch (e) {
-      console.log("====================================");
       console.log(e);
-      console.log("====================================");
     } finally {
       hideModal();
     }
@@ -208,7 +205,7 @@ function Friend({ navigation, route }: FriendProps) {
     const comm = currentEvent?.communication as Communication;
     const id = comm.id as number;
 
-    const event = await postEvent(id, {
+    await postEvent(id, {
       location: location,
       title: title,
     });
@@ -219,10 +216,6 @@ function Friend({ navigation, route }: FriendProps) {
     setDate(new Date());
     updateEvents();
   };
-
-  /* 
-  /// DATEPICKER
-  */
 
   const containerStyle = { backgroundColor: "white", padding: 20 };
 
