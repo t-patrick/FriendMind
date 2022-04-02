@@ -17,8 +17,10 @@ Built with React Native and Expo.
 
 Server is built with Express/NodeJS and uses a PostgreSQL database with Sequelize ORM.
 
-![Screenshot (34)](https://user-images.githubusercontent.com/70112082/161388527-a51e3d82-0377-46f1-a027-fc33d14d718a.png)
-![Screenshot (38)](https://user-images.githubusercontent.com/70112082/161388528-dca685ec-9593-4337-bfa3-7cdc3c7edb94.png)
-![Screenshot (37)](https://user-images.githubusercontent.com/70112082/161388529-adcdf54d-aa7c-41e5-afa3-aa860f9e5f00.png)
-![Screenshot (36)](https://user-images.githubusercontent.com/70112082/161388530-3f07a9a3-dcaa-404f-b0c0-777fb5f67e56.png)
-![Screenshot (35)](https://user-images.githubusercontent.com/70112082/161388531-e1130147-8ca1-4445-8418-4b252646ee0e.png)
+---
+
+<img src="https://user-images.githubusercontent.com/70112082/161388527-a51e3d82-0377-46f1-a027-fc33d14d718a.png" width="100" height="100">
+<img src="https://user-images.githubusercontent.com/70112082/161388528-dca685ec-9593-4337-bfa3-7cdc3c7edb94.png" width="100" height="100">
+<img src="https://user-images.githubusercontent.com/70112082/161388529-adcdf54d-aa7c-41e5-afa3-aa860f9e5f00.png" width="100" height="100">
+<img src="https://user-images.githubusercontent.com/70112082/161388530-3f07a9a3-dcaa-404f-b0c0-777fb5f67e56.png" width="100" height="100">
+<img src="https://user-images.githubusercontent.com/70112082/161388531-e1130147-8ca1-4445-8418-4b252646ee0e.png" width="100" height="100">
