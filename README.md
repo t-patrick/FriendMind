@@ -12,7 +12,7 @@ A mobile app to remind you to keep in touch with your close friends and family. 
 
 ## Stack
 
-Built with React Native and Expo.
+App built with React Native and Expo with Typescript.
 
 Server is built with Express/NodeJS and uses a PostgreSQL database with Sequelize ORM.
 
